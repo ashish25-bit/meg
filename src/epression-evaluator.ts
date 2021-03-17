@@ -1,35 +1,44 @@
 import { input } from './input';
 
-// enum for binary operands
-enum BinaryOperator {
-    '+' = 'PlusToken',
-    '-' = 'MinusToken',
-    '*' = 'MultiplyToken',
-    '/' = 'DivideToken',
-    '(' = 'OpenBracketToken',
-    ')' = 'ClosingBracketToken'
+enum TokenKind {
+    NumberToken,
+    BadToken,
+    PlusToken,
+    MinusToken,
+    MultiplyToken,
+    DivideToken,
+    OpenBracketToken,
+    CloseBracketToken,
+    EndOfFile
 };
 
-interface lexerObject {
-    token: string | number,
-    tokenKind: string
-};
+class SyntaxToken {
+    public token:string;
+    public kind:TokenKind;
+    public value:number|null;
+
+    constructor(token:string, tokenKind:TokenKind, value:number|null) {
+        this.token = token;
+        this.kind = tokenKind;
+        this.value = value;
+    }
+}
 
 class Lexer {
     private expression: string;
     private position: number;
-    private lexer: Array<object>;
 
     constructor(expression: string) {
         this.expression = expression;
         this.position = -1;
-        this.lexer = [];
     }
 
     private next = ():void => { this.position++ }
     private initializePos = ():void => { this.position = -1 }
 
     getChar():string {
+        if (this.position === this.expression.length)
+            return '\0';
         return this.expression[this.position]
     }
 
@@ -39,50 +48,66 @@ class Lexer {
         return !isNaN(parseFloat(char)) || char === '.';
     } 
 
+    nextToken(): SyntaxToken {
+        let ch:string = this.getChar();
+
+        // end of file
+        if (ch === '\0')
+            return new SyntaxToken('EOF', TokenKind.EndOfFile, null);
+
+        // ch is a digit
+        if (this.isDigit()) {
+            let num:string = "";
+            while (this.isDigit()) {
+                num += this.getChar();
+                this.next();
+            }
+
+            const isNumber:boolean = !isNaN(parseFloat(num));
+
+            this.position--;
+
+            return new SyntaxToken(
+                num,
+                isNumber ? TokenKind.NumberToken : TokenKind.BadToken,
+                isNumber ? parseFloat(num) : null
+            );
+        }
+
+        if (ch === '+') 
+            return new SyntaxToken('+', TokenKind.PlusToken, null);
+
+        if (ch === '-') 
+            return new SyntaxToken('-', TokenKind.MinusToken, null);
+            
+        if (ch === '*') 
+            return new SyntaxToken('*', TokenKind.MultiplyToken, null);
+
+        if (ch === '/') 
+            return new SyntaxToken('/', TokenKind.DivideToken, null);
+
+        if (ch === '(') 
+            return new SyntaxToken('+', TokenKind.OpenBracketToken, null);
+
+        if (ch === ')') 
+            return new SyntaxToken('+', TokenKind.CloseBracketToken, null);
+
+        return new SyntaxToken(ch, TokenKind.BadToken, null);
+    }
+
     lexerMethod():void {
-        while (this.position < this.expression.length - 1) {
+        while (this.position < this.expression.length) {
             this.next();
             let ch:string = this.getChar();
             
             // whitespace
             if (ch === ' ') continue;
 
-            const obj: lexerObject = {
-                token: '',
-                tokenKind: ''
-            }; 
-
-            // ch is a operator
-            if (BinaryOperator[ch] !== undefined) {
-                obj.token = ch; 
-                obj.tokenKind = BinaryOperator[ch]; 
-            }
-
-            // is a digit
-            else if (this.isDigit()) {
-                let num:string = "";
-                while (this.isDigit()) {
-                    num += this.getChar();
-                    this.next();
-                }
-
-                const isNumber:boolean = !isNaN(parseFloat(num));
-                obj.token = isNumber ? parseFloat(num) : num; 
-                obj.tokenKind = isNumber ?'NumberToken' : 'BadToken';
-
-                this.position--;
-            }
-
-            else {
-                obj.token = ch; 
-                obj.tokenKind = 'BadToken';
-            }
-            this.lexer.push(obj);
+            const token:SyntaxToken = this.nextToken();
+            console.log(`${token.token}: ${TokenKind[token.kind]} ${token.value}`);
         }
         this.initializePos();
-        console.log(this.lexer)
     }
-
 }
 
 async function main():Promise<void> {
