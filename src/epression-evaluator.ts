@@ -9,8 +9,40 @@ enum TokenKind {
     DivideToken,
     OpenBracketToken,
     CloseBracketToken,
-    EndOfFile
+    EndOfFileToken,
+    WhiteSpaceToken,
+    BinaryExpressionToken
 };
+
+abstract class ExpressionSyntax {
+    [x: string]: any;
+    abstract kind:TokenKind;
+}
+
+class NumberExpressSyntax extends ExpressionSyntax {
+    kind: TokenKind;
+    value: number | null;
+    constructor(value: number | null) {
+        super();
+        this.kind = TokenKind.NumberToken;
+        this.value = value;
+    }
+}
+
+class BinaryExpressSyntax extends ExpressionSyntax {
+    kind: TokenKind;
+    left: ExpressionSyntax;
+    operator: SyntaxToken;
+    right: ExpressionSyntax;
+
+    constructor(left: ExpressionSyntax, operator: SyntaxToken, right: ExpressionSyntax) {
+        super();
+        this.left = left;
+        this.operator = operator;
+        this.right = right;
+        this.kind = TokenKind.BinaryExpressionToken
+    }
+}
 
 class SyntaxToken {
     public token:string;
@@ -49,11 +81,23 @@ class Lexer {
     } 
 
     nextToken(): SyntaxToken {
+        this.next();
         let ch:string = this.getChar();
 
         // end of file
         if (ch === '\0')
-            return new SyntaxToken('EOF', TokenKind.EndOfFile, null);
+            return new SyntaxToken('EOF', TokenKind.EndOfFileToken, null);
+
+        // is a whiteSpace
+        if (ch === ' ') {
+            let str = "";
+            while (this.getChar() == ' ') {
+                str = str + ' ';
+                this.next();
+            }
+            this.position--;
+            return new SyntaxToken(str, TokenKind.WhiteSpaceToken, null);
+        }
 
         // ch is a digit
         if (this.isDigit()) {
@@ -97,16 +141,87 @@ class Lexer {
 
     lexerMethod():void {
         while (this.position < this.expression.length) {
-            this.next();
-            let ch:string = this.getChar();
-            
-            // whitespace
-            if (ch === ' ') continue;
-
             const token:SyntaxToken = this.nextToken();
             console.log(`${token.token}: ${TokenKind[token.kind]} ${token.value}`);
         }
         this.initializePos();
+    }
+}
+
+class Parser {
+    private expression:string;
+    private tokens: Array<SyntaxToken>;
+    private position: number;
+
+    constructor(exp: string) {
+        this.expression = exp;
+        this.tokens = [];
+        this.position = 0;
+    }
+
+    setTokens():void {
+        const lexer = new Lexer(this.expression);
+
+        let token:SyntaxToken = lexer.nextToken();
+        while (token.kind !== TokenKind.EndOfFileToken) {
+            if (token.kind !== TokenKind.BadToken && token.kind !== TokenKind.WhiteSpaceToken)
+                this.tokens.push(token);
+            token = lexer.nextToken();
+        }
+    }
+
+    nextToken(): SyntaxToken {
+        const current = this.getCurrent();
+        this.position++;
+        return current;
+    }
+
+    getCurrent(): SyntaxToken {
+        return this.tokens[this.position];
+    }
+
+    parse():ExpressionSyntax {
+        this.setTokens();
+        let left:ExpressionSyntax = this.parsePrimaryExpression()
+
+        while (
+            this.position < this.tokens.length &&
+            (this.getCurrent().kind === TokenKind.PlusToken ||
+            this.getCurrent().kind === TokenKind.MinusToken)
+        ) {
+            let operatorToken:SyntaxToken = this.nextToken();
+            let right:ExpressionSyntax = this.parsePrimaryExpression();
+            left = new BinaryExpressSyntax(left, operatorToken, right)
+        }
+
+        return left;
+    }
+
+    parsePrimaryExpression(): ExpressionSyntax {
+        return new NumberExpressSyntax(this.nextToken().value);
+    }
+}
+
+function printTree(expression: ExpressionSyntax, indent=""):void {
+    if (!expression) return;
+
+    let p:string = TokenKind[expression.kind];
+    
+    // number token
+    if (expression.kind === TokenKind.NumberToken)
+        p = p + " " + expression.value;
+
+    // operator token
+    else if (expression.kind === TokenKind.MinusToken ||
+             expression.kind === TokenKind.PlusToken)
+        p = p + " " + expression.token;
+    
+    console.log(indent, p);
+    indent = indent + "    ";
+
+    for (const prop in expression) {
+        if (typeof(expression[prop]) === "object")
+            printTree(expression[prop], indent);
     }
 }
 
@@ -115,9 +230,13 @@ async function main():Promise<void> {
         const expression: string = await input("> Enter the algebraic expression: ");
         if (expression === 'q') break;
 
-        const lexer = new Lexer(expression);
-        lexer.lexerMethod();
+        const parser = new Parser(expression);
+        const exp:ExpressionSyntax = parser.parse();
+
+        printTree(exp);
+        console.log()
     }
+    console.log(); 
 }
 
 main();
