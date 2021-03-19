@@ -11,12 +11,21 @@ enum TokenKind {
     CloseBracketToken,
     EndOfFileToken,
     WhiteSpaceToken,
-    BinaryExpressionToken
+    BinaryExpressionToken,
+    WrongToken
 };
 
 abstract class ExpressionSyntax {
     [x: string]: any;
     abstract kind:TokenKind;
+}
+
+class WorngTokenExpression extends ExpressionSyntax {
+    kind: TokenKind;
+    constructor() {
+        super();
+        this.kind = TokenKind.WrongToken;
+    }
 }
 
 class NumberExpressSyntax extends ExpressionSyntax {
@@ -59,14 +68,20 @@ class SyntaxToken {
 class Lexer {
     private expression: string;
     private position: number;
+    private _errors: Array<string>;
 
     constructor(expression: string) {
         this.expression = expression;
         this.position = -1;
+        this._errors = [];
     }
 
     private next = ():void => { this.position++ }
     private initializePos = ():void => { this.position = -1 }
+
+    get errors():Array<string> {
+        return this._errors;
+    }
 
     getChar():string {
         if (this.position === this.expression.length)
@@ -136,6 +151,7 @@ class Lexer {
         if (ch === ')') 
             return new SyntaxToken('+', TokenKind.CloseBracketToken, null);
 
+        this._errors.push(`Bad token: ${ch}`);
         return new SyntaxToken(ch, TokenKind.BadToken, null);
     }
 
@@ -152,22 +168,30 @@ class Parser {
     private expression:string;
     private tokens: Array<SyntaxToken>;
     private position: number;
+    private _errors: Array<string>;
 
     constructor(exp: string) {
         this.expression = exp;
         this.tokens = [];
         this.position = 0;
+        this._errors = [];
+    }
+
+    get errors():Array<string> {
+        return this._errors;
     }
 
     setTokens():void {
         const lexer = new Lexer(this.expression);
-
+        
         let token:SyntaxToken = lexer.nextToken();
         while (token.kind !== TokenKind.EndOfFileToken) {
             if (token.kind !== TokenKind.BadToken && token.kind !== TokenKind.WhiteSpaceToken)
                 this.tokens.push(token);
             token = lexer.nextToken();
         }
+        this.tokens.push(token);
+        this._errors = [...lexer.errors];
     }
 
     nextToken(): SyntaxToken {
@@ -182,28 +206,39 @@ class Parser {
 
     parse():ExpressionSyntax {
         this.setTokens();
-        let left:ExpressionSyntax = this.parsePrimaryExpression()
-
-        while (
-            this.position < this.tokens.length &&
+        let left: ExpressionSyntax = this.parsePrimaryExpression();
+    
+        while (this.position < this.tokens.length &&
             (this.getCurrent().kind === TokenKind.PlusToken ||
-            this.getCurrent().kind === TokenKind.MinusToken)
-        ) {
-            let operatorToken:SyntaxToken = this.nextToken();
-            let right:ExpressionSyntax = this.parsePrimaryExpression();
-            left = new BinaryExpressSyntax(left, operatorToken, right)
+                this.getCurrent().kind === TokenKind.MinusToken)) {
+            let operatorToken: SyntaxToken = this.nextToken();
+            let right: ExpressionSyntax = this.parsePrimaryExpression();
+            left = new BinaryExpressSyntax(left, operatorToken, right);
         }
+        
+        const _ = this.matchKind(TokenKind.EndOfFileToken);
 
         return left;
     }
 
+    matchKind(kind: TokenKind):boolean {
+        if (this.getCurrent().kind === kind)
+            return true;
+        // report error
+        this._errors.push(`ERROR: Unexpected token ${TokenKind[this.getCurrent().kind]}, expected ${TokenKind[kind]}`);
+        return false;
+    }
+
     parsePrimaryExpression(): ExpressionSyntax {
-        return new NumberExpressSyntax(this.nextToken().value);
+        if (this.matchKind(TokenKind.NumberToken))
+            return new NumberExpressSyntax(this.nextToken().value);
+        return new WorngTokenExpression();
     }
 }
 
 function printTree(expression: ExpressionSyntax, indent=""):void {
     if (!expression) return;
+    if (expression.kind === TokenKind.WrongToken) return ;
 
     let p:string = TokenKind[expression.kind];
     
@@ -235,6 +270,8 @@ async function main():Promise<void> {
 
         printTree(exp);
         console.log()
+        if (parser.errors.length) for (const error of parser.errors) console.log(error);
+        console.log();
     }
     console.log(); 
 }
