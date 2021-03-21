@@ -1,14 +1,18 @@
 export enum TokenKind {
-    NumberToken,
     BadToken,
+    WhiteSpaceToken,
+    EndOfFileToken,
+    WrongToken,
+
+    NumberToken,
     PlusToken,
     MinusToken,
     MultiplyToken,
     DivideToken,
+    
     OpenBracketToken,
     CloseBracketToken,
-    EndOfFileToken,
-    WhiteSpaceToken,
+    
     BinaryExpressionToken,
-    WrongToken
+    ParenthesizedExpression
 };
