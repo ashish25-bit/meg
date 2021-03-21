@@ -1,19 +1,5 @@
 import { input } from './input';
-
-enum TokenKind {
-    NumberToken,
-    BadToken,
-    PlusToken,
-    MinusToken,
-    MultiplyToken,
-    DivideToken,
-    OpenBracketToken,
-    CloseBracketToken,
-    EndOfFileToken,
-    WhiteSpaceToken,
-    BinaryExpressionToken,
-    WrongToken
-};
+import { TokenKind } from './TokenKind';
 
 abstract class ExpressionSyntax {
     [x: string]: any;
@@ -204,19 +190,37 @@ class Parser {
         return this.tokens[this.position];
     }
 
-    parse():ExpressionSyntax {
+    parseTerm():ExpressionSyntax {
         this.setTokens();
-        let left: ExpressionSyntax = this.parsePrimaryExpression();
-    
-        while (this.position < this.tokens.length &&
+        let left: ExpressionSyntax = this.parseFactor();
+        
+        while (
+            this.position < this.tokens.length &&
             (this.getCurrent().kind === TokenKind.PlusToken ||
-                this.getCurrent().kind === TokenKind.MinusToken)) {
+            this.getCurrent().kind === TokenKind.MinusToken)
+        ) {
             let operatorToken: SyntaxToken = this.nextToken();
-            let right: ExpressionSyntax = this.parsePrimaryExpression();
+            let right: ExpressionSyntax = this.parseFactor();
             left = new BinaryExpressSyntax(left, operatorToken, right);
         }
         
         const _ = this.matchKind(TokenKind.EndOfFileToken);
+
+        return left;
+    }
+
+    parseFactor():ExpressionSyntax {
+        let left:ExpressionSyntax = this.parsePrimaryExpression();
+
+        while (
+            this.position < this.tokens.length &&
+            (this.getCurrent().kind === TokenKind.MultiplyToken ||
+             this.getCurrent().kind === TokenKind.DivideToken)
+        ) {
+            let operatorToken: SyntaxToken = this.nextToken();
+            let right: ExpressionSyntax = this.parsePrimaryExpression();
+            left = new BinaryExpressSyntax(left, operatorToken, right);
+        }
 
         return left;
     }
@@ -234,6 +238,31 @@ class Parser {
             return new NumberExpressSyntax(this.nextToken().value);
         return new WorngTokenExpression();
     }
+
+    resultant(left: number , operator: SyntaxToken , right: number): number {
+        if (operator.kind === TokenKind.PlusToken)
+            return left + right;
+        if (operator.kind === TokenKind.MinusToken)
+            return left - right;
+        if (operator.kind === TokenKind.MultiplyToken)
+            return left * right;
+        if (operator.kind === TokenKind.DivideToken)
+            return left / right;
+        
+        throw new Error(`Unexpected operator '${operator.token}'`);
+    }
+
+    evaluate(exp: ExpressionSyntax): number {
+        if (exp.kind === TokenKind.NumberToken) return exp.value;
+
+        if (exp.kind === TokenKind.BinaryExpressionToken) {
+            let left = this.evaluate(exp.left);
+            let right = this.evaluate(exp.right);
+            return this.resultant(left, exp.operator, right);
+        }
+
+        throw new Error(`Unexpected node of '${exp.kind}' kind`);
+    }
 }
 
 function printTree(expression: ExpressionSyntax, indent=""):void {
@@ -248,7 +277,9 @@ function printTree(expression: ExpressionSyntax, indent=""):void {
 
     // operator token
     else if (expression.kind === TokenKind.MinusToken ||
-             expression.kind === TokenKind.PlusToken)
+             expression.kind === TokenKind.PlusToken  ||
+             expression.kind === TokenKind.MultiplyToken  ||
+             expression.kind === TokenKind.DivideToken )
         p = p + " " + expression.token;
     
     console.log(indent, p);
@@ -266,11 +297,12 @@ async function main():Promise<void> {
         if (expression === 'q') break;
 
         const parser = new Parser(expression);
-        const exp:ExpressionSyntax = parser.parse();
+        const exp:ExpressionSyntax = parser.parseTerm();
 
         printTree(exp);
         console.log()
         if (parser.errors.length) for (const error of parser.errors) console.log(error);
+        else console.log(parser.evaluate(exp));
         console.log();
     }
     console.log(); 
