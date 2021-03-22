@@ -8,14 +8,13 @@ function printTree(expression: ExpressionSyntax, indent=""):void {
     if (!expression) return;
     if (expression.kind === TokenKind.WrongToken) return ;
 
-    let p:string = TokenKind[expression.kind];
+    let p:string = expression.constructor.name;
+
+    if (p === "SyntaxToken") p = TokenKind[expression.kind];
     
-    // number token
-    if (expression.kind === TokenKind.NumberToken)
-        p = p + " " + expression.value;
 
     // operator token
-    else if (expression.kind === TokenKind.MinusToken ||
+    if (expression.kind === TokenKind.MinusToken ||
              expression.kind === TokenKind.PlusToken  ||
              expression.kind === TokenKind.MultiplyToken  ||
              expression.kind === TokenKind.DivideToken ||
@@ -25,6 +24,9 @@ function printTree(expression: ExpressionSyntax, indent=""):void {
     
     console.log(indent, p);
     indent = `${indent}    `;
+
+    if (expression.kind === TokenKind.NumberToken)
+        console.log(indent, TokenKind[TokenKind.NumberToken], expression.value);
     
     for (const prop in expression) {
         if (typeof(expression[prop]) === "object")
@@ -42,11 +44,14 @@ async function main():Promise<void> {
 
         printTree(exp);
         console.log()
+
         if (parser.errors.length) for (const error of parser.errors) console.log(error);
+
         else {
             const evaluate = new Evaluate();
             console.log(evaluate.evaluate(exp));
         }
+
         console.log();
     }
     console.log(); 

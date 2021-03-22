@@ -24,7 +24,7 @@ export class LiteralExpressionSyntax extends ExpressionSyntax {
     }
 }
 
-export class BinaryExpressSyntax extends ExpressionSyntax {
+export class BinaryExpressionSyntax extends ExpressionSyntax {
     kind: TokenKind;
     left: ExpressionSyntax;
     operator: SyntaxToken;
@@ -36,6 +36,19 @@ export class BinaryExpressSyntax extends ExpressionSyntax {
         this.operator = operator;
         this.right = right;
         this.kind = TokenKind.BinaryExpressionToken;
+    }
+}
+
+export class UnaryExpressionSyntax extends ExpressionSyntax {
+    kind: TokenKind;
+    operand: ExpressionSyntax;
+    operator: SyntaxToken;
+
+    constructor(operator: SyntaxToken, operand: ExpressionSyntax) {
+        super();
+        this.kind = TokenKind.UnaryExpressionSToken;
+        this.operator = operator;
+        this.operand = operand;
     }
 }
 

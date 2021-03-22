@@ -1,9 +1,10 @@
 import {
     ExpressionSyntax,
-    BinaryExpressSyntax,
+    BinaryExpressionSyntax,
     ParenthesizeExpressionSyntax,
     LiteralExpressionSyntax,
-    WorngTokenExpression
+    WorngTokenExpression,
+    UnaryExpressionSyntax
 } from './ExpressionSyntax';
 import { Lexer } from './Lexer';
 import { SyntaxToken } from './SyntaxToken';
@@ -64,13 +65,33 @@ export class Parser {
         }
     }
 
-    parser() {
+    parser(): ExpressionSyntax {
         this.setTokens();
-        return this.parseExpression();
+        const expression = this.parseExpression();
+        this.matchKind(TokenKind.EndOfFileToken);
+        return expression;
     }
 
     parseExpression(precedence: number = 0): ExpressionSyntax {
-        let left:ExpressionSyntax = this.parsePrimaryExpression();
+        let left:ExpressionSyntax;
+
+        if (
+            this.getCurrent().kind === TokenKind.PlusToken || 
+            this.getCurrent().kind === TokenKind.MinusToken
+        ) {
+            let operator: SyntaxToken = this.nextToken();
+
+            // if the expression is -1*2+3
+            if (this.getCurrent().kind === TokenKind.NumberToken)
+                left = new UnaryExpressionSyntax(operator, this.parsePrimaryExpression());
+
+            else {
+                let operand: ExpressionSyntax = this.parseExpression();
+                left = new UnaryExpressionSyntax(operator, operand)
+            }
+        }
+        else
+            left = this.parsePrimaryExpression();
 
         while (this.getCurrent().kind != TokenKind.EndOfFileToken) {
             let nextPrecendece:number = this.operatorPrecedence(this.getCurrent().kind);
@@ -79,7 +100,7 @@ export class Parser {
 
             let operatorToken = this.nextToken();
             let right = this.parseExpression(nextPrecendece);
-            left = new BinaryExpressSyntax(left, operatorToken, right);
+            left = new BinaryExpressionSyntax(left, operatorToken, right);
         }
         return left;
     }
@@ -95,7 +116,7 @@ export class Parser {
     parsePrimaryExpression(): ExpressionSyntax {
         if (this.getCurrent().kind === TokenKind.OpenBracketToken) {
             let left = this.nextToken();
-            let expression = this.parseTerm(true);
+            let expression = this.parseExpression();
             if (this.matchKind(TokenKind.CloseBracketToken))
                 return new ParenthesizeExpressionSyntax(left, expression, this.nextToken());
         }
