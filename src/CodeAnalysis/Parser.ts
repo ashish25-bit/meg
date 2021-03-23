@@ -13,6 +13,7 @@ import {
     binaryOperatorPrecedence,
     unaryOperatorPrecedence
 } from './OperatorPrecedence';
+import { getKeywordKind } from './Keyword';
 
 export class Parser {
     private expression: string;
@@ -32,6 +33,7 @@ export class Parser {
     }
 
     setTokens(): void {
+        this.expression += '\0';
         const lexer = new Lexer(this.expression);
 
         let token: SyntaxToken = lexer.nextToken();
@@ -109,8 +111,16 @@ export class Parser {
                 return new ParenthesizeExpressionSyntax(left, expression, this.nextToken());
         }
 
+        else if (
+            this.getCurrent().kind === TokenKind.BooleanTrueToken ||
+            this.getCurrent().kind === TokenKind.BooleanFalseToken
+        ) {
+            const kind = this.getCurrent().value === true ? TokenKind.BooleanTrueToken : TokenKind.BooleanFalseToken;
+            return new LiteralExpressionSyntax(this.nextToken().value, kind);
+        }
+
         if (this.matchKind(TokenKind.NumberToken))
-            return new LiteralExpressionSyntax(this.nextToken().value);
+            return new LiteralExpressionSyntax(this.nextToken().value, TokenKind.NumberToken);
         return new WorngTokenExpression();
     }
 }

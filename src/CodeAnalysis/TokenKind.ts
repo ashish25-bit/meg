@@ -9,11 +9,16 @@ export enum TokenKind {
     MinusToken,
     MultiplyToken,
     DivideToken,
-
     OpenBracketToken,
     CloseBracketToken,
+    BinaryAndOperator,
+    BinaryOrOperator,
+
+    BooleanTrueToken,
+    BooleanFalseToken,
+    IdentifierToken,
 
     UnaryExpressionSToken,
     BinaryExpressionToken,
-    ParenthesizedExpression
+    ParenthesizedExpression,
 };

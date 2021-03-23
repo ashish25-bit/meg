@@ -1,3 +1,4 @@
+import { getKeywordKind } from './Keyword';
 import { SyntaxToken } from './SyntaxToken';
 import { TokenKind } from './TokenKind';
 
@@ -29,6 +30,11 @@ export class Lexer {
     isDigit(): boolean {
         const char: string = this.getChar();
         return !isNaN(parseFloat(char)) || char === '.';
+    }
+
+    isAlpha(): boolean {
+        const char: string = this.getChar();
+        return (char >= 'a' && char <= 'z') || char >= 'A' && char <= 'Z';
     }
 
     nextToken(): SyntaxToken {
@@ -67,6 +73,43 @@ export class Lexer {
                 isNumber ? TokenKind.NumberToken : TokenKind.BadToken,
                 isNumber ? parseFloat(num) : null
             );
+        }
+
+        if (this.isAlpha()) {
+            let str: string = "";
+            while (this.isAlpha()) {
+                str += this.getChar();
+                this.next();
+            }
+            const kind: TokenKind = getKeywordKind(str);
+            if (kind === TokenKind.IdentifierToken)
+                return new SyntaxToken(str, kind, null);
+
+            if (kind === TokenKind.BooleanTrueToken)
+                return new SyntaxToken(str, kind, true);
+
+            if (kind === TokenKind.BooleanFalseToken)
+                return new SyntaxToken(str, kind, false);
+        }
+
+        // binary and operator
+        if (ch === '&') {
+            this.next();
+            if (this.getChar() == '&')
+                return new SyntaxToken('&&', TokenKind.BinaryAndOperator, null);
+            // // can add the bitwise &
+            // else 
+            //     return new SyntaxToken('&&', TokenKind.BitwiseAndOperator, null);
+        }
+
+        // binary or operator
+        if (ch === '|') {
+            this.next();
+            if (this.getChar() == '|')
+            return new SyntaxToken('||', TokenKind.BinaryOrOperator, null);
+            // // can add the bitwise |
+            // else 
+            //     return new SyntaxToken('&&', TokenKind.BitwiseOrOperator, null);
         }
 
         if (ch === '+')

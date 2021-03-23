@@ -16,10 +16,10 @@ export class WorngTokenExpression extends ExpressionSyntax {
 
 export class LiteralExpressionSyntax extends ExpressionSyntax {
     kind: TokenKind;
-    value: number | null;
-    constructor(value: number | null) {
+    value: number | null | boolean;
+    constructor(value: number | null | boolean, kind: TokenKind) {
         super();
-        this.kind = TokenKind.NumberToken;
+        this.kind = kind;
         this.value = value;
     }
 }

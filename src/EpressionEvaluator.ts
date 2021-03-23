@@ -19,7 +19,9 @@ function printTree(expression: ExpressionSyntax, indent=""):void {
              expression.kind === TokenKind.MultiplyToken  ||
              expression.kind === TokenKind.DivideToken ||
              expression.kind === TokenKind.OpenBracketToken ||
-             expression.kind === TokenKind.CloseBracketToken
+             expression.kind === TokenKind.CloseBracketToken ||
+             expression.kind === TokenKind.BinaryAndOperator ||
+             expression.kind === TokenKind.BinaryOrOperator
     ) p = p + " " + expression.token;
     
     console.log(indent, p);
@@ -27,7 +29,13 @@ function printTree(expression: ExpressionSyntax, indent=""):void {
 
     if (expression.kind === TokenKind.NumberToken)
         console.log(indent, TokenKind[TokenKind.NumberToken], expression.value);
+
+    if (expression.kind === TokenKind.BooleanTrueToken)
+        console.log(indent, TokenKind[TokenKind.BooleanTrueToken], expression.value);
     
+    if (expression.kind === TokenKind.BooleanFalseToken)
+        console.log(indent, TokenKind[TokenKind.BooleanFalseToken], expression.value);
+
     for (const prop in expression) {
         if (typeof(expression[prop]) === "object")
             printTree(expression[prop], indent);

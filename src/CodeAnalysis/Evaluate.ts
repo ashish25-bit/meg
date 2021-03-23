@@ -27,6 +27,12 @@ export class Evaluate {
         if (exp.kind === TokenKind.NumberToken)
             return exp.value;
 
+        if (exp.kind === TokenKind.BooleanTrueToken)
+            return 1;
+        
+        if (exp.kind === TokenKind.BooleanFalseToken)
+            return 0;
+
         if (exp.kind === TokenKind.UnaryExpressionSToken) {
             
             if (exp.operand.kind === TokenKind.NumberToken) 
@@ -58,9 +64,16 @@ export class Evaluate {
         if (exp.kind === TokenKind.BinaryExpressionToken) {
             let left = this.evaluate(exp.left);
             let right = this.evaluate(exp.right);
+
+            if (exp.operator.kind === TokenKind.BinaryAndOperator)
+                return this.resultant(left, new SyntaxToken('*', TokenKind.MultiplyToken, null), right);
+            
+            if (exp.operator.kind === TokenKind.BinaryOrOperator)
+                return this.resultant(left, new SyntaxToken('+', TokenKind.PlusToken, null), right); 
+            
             return this.resultant(left, exp.operator, right);
         }
 
-        throw new Error(`Unexpected node of '${exp.kind}' kind`);
+        throw new Error(`Unexpected node of '${TokenKind[exp.kind]}' kind`);
     }
 }
