@@ -9,6 +9,10 @@ import {
 import { Lexer } from './Lexer';
 import { SyntaxToken } from './SyntaxToken';
 import { TokenKind } from './TokenKind';
+import {
+    binaryOperatorPrecedence,
+    unaryOperatorPrecedence
+} from './OperatorPrecedence';
 
 export class Parser {
     private expression: string;
@@ -50,21 +54,6 @@ export class Parser {
         return this.tokens[this.position];
     }
 
-    operatorPrecedence(kind: TokenKind): number {
-        switch(kind) {
-            case TokenKind.MultiplyToken:
-            case TokenKind.DivideToken:
-                return 2;
-
-            case TokenKind.PlusToken:
-            case TokenKind.MinusToken:
-                return 1;
-            
-            default:
-                return 0;
-        }
-    }
-
     parser(): ExpressionSyntax {
         this.setTokens();
         const expression = this.parseExpression();
@@ -75,16 +64,15 @@ export class Parser {
     parseExpression(precedence: number = 0): ExpressionSyntax {
         let left:ExpressionSyntax;
 
-        if (
-            this.getCurrent().kind === TokenKind.PlusToken || 
-            this.getCurrent().kind === TokenKind.MinusToken
-        ) {
+        let unaryPrecedence = unaryOperatorPrecedence(this.getCurrent().kind);
+
+        if (unaryPrecedence != 0 && unaryPrecedence >= precedence) {
             let operator: SyntaxToken = this.nextToken();
 
             // if the expression is -1*2+3
             if (this.getCurrent().kind === TokenKind.NumberToken)
                 left = new UnaryExpressionSyntax(operator, this.parsePrimaryExpression());
-
+            
             else {
                 let operand: ExpressionSyntax = this.parseExpression();
                 left = new UnaryExpressionSyntax(operator, operand)
@@ -94,12 +82,12 @@ export class Parser {
             left = this.parsePrimaryExpression();
 
         while (this.getCurrent().kind != TokenKind.EndOfFileToken) {
-            let nextPrecendece:number = this.operatorPrecedence(this.getCurrent().kind);
-            if (nextPrecendece == 0 || nextPrecendece <= precedence)
+            let nextPrecendence:number = binaryOperatorPrecedence(this.getCurrent().kind);
+            if (nextPrecendence == 0 || nextPrecendence <= precedence)
                 break;
 
             let operatorToken = this.nextToken();
-            let right = this.parseExpression(nextPrecendece);
+            let right = this.parseExpression(nextPrecendence);
             left = new BinaryExpressionSyntax(left, operatorToken, right);
         }
         return left;
