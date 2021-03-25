@@ -1,5 +1,5 @@
-import { ExpressionSyntax } from '../ExpressionSyntax';
-import { TokenKind } from '../TokenKind';
+import { ExpressionSyntax } from '../Syntax/ExpressionSyntax';
+import { TokenKind } from '../Syntax/TokenKind';
 import { BinaryExpression } from './BinaryExpression';
 import { BinaryOperatorKind } from './BinaryOperatorKind';
 import { Expression } from './Expression';

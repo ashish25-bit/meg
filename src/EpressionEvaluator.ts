@@ -1,7 +1,7 @@
 import { input } from './InputModule/input';
-import { ExpressionSyntax } from './CodeAnalysis/ExpressionSyntax';
-import { Parser } from './CodeAnalysis/Parser';
-import { TokenKind } from './CodeAnalysis/TokenKind';
+import { ExpressionSyntax } from './CodeAnalysis/Syntax/ExpressionSyntax';
+import { Parser } from './CodeAnalysis/Syntax//Parser';
+import { TokenKind } from './CodeAnalysis/Syntax//TokenKind';
 import { Evaluate } from './CodeAnalysis/Evaluate';
 import { Binder } from './CodeAnalysis/AST/AbstractSyntaxtree';
 import { Expression } from './CodeAnalysis/AST/Expression';
