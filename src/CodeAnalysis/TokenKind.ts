@@ -4,7 +4,6 @@ export enum TokenKind {
     EndOfFileToken,
     WrongToken,
 
-    NumberToken,
     PlusToken,
     MinusToken,
     MultiplyToken,
@@ -13,12 +12,13 @@ export enum TokenKind {
     CloseBracketToken,
     BinaryAndOperator,
     BinaryOrOperator,
-
+    
+    NumberToken,
     BooleanTrueToken,
     BooleanFalseToken,
     IdentifierToken,
 
-    UnaryExpressionSToken,
+    UnaryExpressionToken,
     BinaryExpressionToken,
     ParenthesizedExpression,
 };

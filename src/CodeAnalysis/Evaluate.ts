@@ -33,13 +33,13 @@ export class Evaluate {
         if (exp.kind === TokenKind.BooleanFalseToken)
             return 0;
 
-        if (exp.kind === TokenKind.UnaryExpressionSToken) {
+        if (exp.kind === TokenKind.UnaryExpressionToken) {
             
             if (exp.operand.kind === TokenKind.NumberToken) 
                 return this.changeOperation(exp.operand.value, exp.operator.kind);
             
             // for expression: --1, -+-1
-            if (exp.operand.kind === TokenKind.UnaryExpressionSToken)
+            if (exp.operand.kind === TokenKind.UnaryExpressionToken)
                 return this.changeOperation(this.evaluate(exp.operand), exp.operator.kind);
 
             if (

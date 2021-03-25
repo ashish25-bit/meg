@@ -1,11 +1,10 @@
 import {
-    ExpressionSyntax,
-    BinaryExpressionSyntax,
-    ParenthesizeExpressionSyntax,
-    LiteralExpressionSyntax,
-    WorngTokenExpression,
-    UnaryExpressionSyntax
-} from './ExpressionSyntax';
+    ExpressionSyntax} from './ExpressionSyntax';
+import { ParenthesizeExpressionSyntax } from "./ParenthesizeExpressionSyntax";
+import { UnaryExpressionSyntax } from "./UnaryExpressionSyntax";
+import { BinaryExpressionSyntax } from "./BinaryExpressionSyntax";
+import { LiteralExpressionSyntax } from "./LiteralExpressionSyntax";
+import { WorngTokenExpression } from "./WorngTokenExpression";
 import { Lexer } from './Lexer';
 import { SyntaxToken } from './SyntaxToken';
 import { TokenKind } from './TokenKind';
@@ -13,7 +12,6 @@ import {
     binaryOperatorPrecedence,
     unaryOperatorPrecedence
 } from './OperatorPrecedence';
-import { getKeywordKind } from './Keyword';
 
 export class Parser {
     private expression: string;
