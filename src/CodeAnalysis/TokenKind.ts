@@ -2,7 +2,6 @@ export enum TokenKind {
     BadToken,
     WhiteSpaceToken,
     EndOfFileToken,
-    WrongToken,
 
     PlusToken,
     MinusToken,

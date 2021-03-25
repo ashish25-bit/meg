@@ -3,10 +3,12 @@ import { ExpressionSyntax } from './CodeAnalysis/ExpressionSyntax';
 import { Parser } from './CodeAnalysis/Parser';
 import { TokenKind } from './CodeAnalysis/TokenKind';
 import { Evaluate } from './CodeAnalysis/Evaluate';
+import { Binder } from './CodeAnalysis/AST/AbstractSyntaxtree';
+import { Expression } from './CodeAnalysis/AST/Expression';
 
 function printTree(expression: ExpressionSyntax, indent=""):void {
     if (!expression) return;
-    if (expression.kind === TokenKind.WrongToken) return ;
+    if (expression.kind === TokenKind.BadToken) return ;
 
     let p:string = expression.constructor.name;
 
@@ -53,14 +55,22 @@ async function main():Promise<void> {
         printTree(exp);
         console.log()
 
-        if (parser.errors.length) for (const error of parser.errors) console.log(error);
-
+        if (parser.errors.length)
+            for (const error of parser.errors) console.log(error);
+        
         else {
-            const evaluate = new Evaluate();
-            console.log(evaluate.evaluate(exp));
+            const AST = new Binder();
+            const ast: Expression = AST.bind(exp);
+            
+            if (AST.errors.length)
+            for (const error of parser.errors) console.log(error);
+            
+            else {
+                const evaluate = new Evaluate();
+                console.log(evaluate.evaluate(ast));
+            }
         }
-
-        console.log();
+        console.log(); 
     }
     console.log(); 
 }

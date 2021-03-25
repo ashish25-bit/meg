@@ -1,10 +1,8 @@
-import {
-    ExpressionSyntax} from './ExpressionSyntax';
+import { ExpressionSyntax} from './ExpressionSyntax';
 import { ParenthesizeExpressionSyntax } from "./ParenthesizeExpressionSyntax";
 import { UnaryExpressionSyntax } from "./UnaryExpressionSyntax";
 import { BinaryExpressionSyntax } from "./BinaryExpressionSyntax";
 import { LiteralExpressionSyntax } from "./LiteralExpressionSyntax";
-import { WorngTokenExpression } from "./WorngTokenExpression";
 import { Lexer } from './Lexer';
 import { SyntaxToken } from './SyntaxToken';
 import { TokenKind } from './TokenKind';
@@ -119,6 +117,6 @@ export class Parser {
 
         if (this.matchKind(TokenKind.NumberToken))
             return new LiteralExpressionSyntax(this.nextToken().value, TokenKind.NumberToken);
-        return new WorngTokenExpression();
+        return new SyntaxToken(this.getCurrent().token, TokenKind.BadToken, null);
     }
 }
