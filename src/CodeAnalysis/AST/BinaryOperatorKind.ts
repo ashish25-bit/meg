@@ -5,5 +5,6 @@ export enum BinaryOperatorKind {
     Division,
     OrOperator,
     AndOperator,
-    EqualsOperator
+    EqualsOperator,
+    NotEquals
 }

@@ -123,8 +123,14 @@ export class Lexer {
                 return new SyntaxToken('==', TokenKind.EqualityOperator, null)
         }
 
-        if (ch === '!')
+        if (ch === '!') {
+            this.next();
+            if (this.getChar() == '=')
+                return new SyntaxToken('!=', TokenKind.NotEqualOperator, null);
+            
+            this.position--;
             return new SyntaxToken('!', TokenKind.UnaryNotOperator, null);
+        }
 
         if (ch === '+')
             return new SyntaxToken('+', TokenKind.PlusToken, null);

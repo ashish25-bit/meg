@@ -63,6 +63,11 @@ export class Evaluate {
             return 0;
         }
 
+        if (operator === BinaryOperatorKind.NotEquals) {
+            if (left !== right) return 1;
+            return 0;
+        }
+
         throw new Error(`Unexpected operator '${operator}'`);
     }
 

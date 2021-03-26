@@ -22,15 +22,16 @@ export function binaryOperatorPrecedence(kind: TokenKind): number {
         case TokenKind.MinusToken:
             return 4;
         
-        case TokenKind.BinaryAndOperator:
+        case TokenKind.EqualityOperator:
+        case TokenKind.NotEqualOperator:
             return 3;
 
-        case TokenKind.BinaryOrOperator:
+        case TokenKind.BinaryAndOperator:
             return 2;
 
-        case TokenKind.EqualityOperator:
+        case TokenKind.BinaryOrOperator:
             return 1;
-        
+
         default:
             return 0;
     }

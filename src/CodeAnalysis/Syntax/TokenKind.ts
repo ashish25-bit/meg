@@ -22,4 +22,5 @@ export enum TokenKind {
     UnaryExpressionToken,
     BinaryExpressionToken,
     ParenthesizedExpression,
+    NotEqualOperator
 };

@@ -113,6 +113,9 @@ export class Binder {
 
             case TokenKind.EqualityOperator:
                 return BinaryOperatorKind.EqualsOperator;
+            
+            case TokenKind.NotEqualOperator:
+                return BinaryOperatorKind.NotEquals;
 
             default:
                 throw new Error(`Unexpected binary token kind '${kind}'`);
