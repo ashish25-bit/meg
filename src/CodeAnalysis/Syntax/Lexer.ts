@@ -81,6 +81,10 @@ export class Lexer {
                 str += this.getChar();
                 this.next();
             }
+
+            if (this.getChar() !== '\0' && this.getChar() !== ' ')
+                this.position--;
+
             const kind: TokenKind = getKeywordKind(str);
             if (kind === TokenKind.IdentifierToken)
                 return new SyntaxToken(str, kind, null);
