@@ -1,0 +1,65 @@
+:root {
+  --background-color: #33363A;
+  --editor-color: #22272E;
+  --output-color: #1B2027;
+  
+  --scrollbar-background: #2e2e30;
+  --scrollbar-track-background: #4b4b4d;
+}
+
+@font-face {
+    font-family: Chango;
+    src: url('./fonts/Chango-Regular.ttf');
+}
+
+@font-face {
+  font-family: Montserrat-Light;
+  src: url('./fonts/Montserrat-Light.ttf');
+}
+
+@font-face {
+  font-family: Montserrat-Bold;
+  src: url('./fonts/Montserrat-Bold.ttf');
+}
+
+* {
+    margin: 0;
+    padding: 0;
+  }
+  
+body {
+    overflow-x: hidden;
+    box-sizing: border-box;
+    background-color: var(--background-color);
+    font-family: Montserrat-Light;
+}
+
+a {
+  text-decoration: none;
+}
+
+input, button, a {
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.0);
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-background);
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-track-background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a3a; 
+}
