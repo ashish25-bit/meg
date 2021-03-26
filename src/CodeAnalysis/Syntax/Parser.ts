@@ -1,4 +1,4 @@
-import { ExpressionSyntax} from './ExpressionSyntax';
+import { ExpressionSyntax } from './ExpressionSyntax';
 import { ParenthesizeExpressionSyntax } from "./ParenthesizeExpressionSyntax";
 import { UnaryExpressionSyntax } from "./UnaryExpressionSyntax";
 import { BinaryExpressionSyntax } from "./BinaryExpressionSyntax";

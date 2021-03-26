@@ -81,6 +81,9 @@ export class Binder {
             case TokenKind.MinusToken:
                 return UnaryOperatorKind.Negation;
 
+            case TokenKind.UnaryNotOperator:
+                return UnaryOperatorKind.Not;
+
             default:
                 throw new Error(`Unexpected unary token kind '${kind}'`);
         }
@@ -107,6 +110,9 @@ export class Binder {
 
             case TokenKind.BinaryAndOperator:
                 return BinaryOperatorKind.AndOperator;
+
+            case TokenKind.EqualityOperator:
+                return BinaryOperatorKind.EqualsOperator;
 
             default:
                 throw new Error(`Unexpected binary token kind '${kind}'`);

@@ -4,5 +4,6 @@ export enum BinaryOperatorKind {
     Multiplication,
     Division,
     OrOperator,
-    AndOperator
+    AndOperator,
+    EqualsOperator
 }

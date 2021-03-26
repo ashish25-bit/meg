@@ -1,4 +1,5 @@
 export enum UnaryOperatorKind {
     Identity,
-    Negation
+    Negation,
+    Not
 }

@@ -58,12 +58,22 @@ export class Evaluate {
         if (operator === BinaryOperatorKind.Division)
             return left / right;
 
+        if (operator === BinaryOperatorKind.EqualsOperator) {
+            if (left === right) return 1;
+            return 0;
+        }
+
         throw new Error(`Unexpected operator '${operator}'`);
     }
 
     changeOperation(number: number, kind: UnaryOperatorKind): number {
         if (kind === UnaryOperatorKind.Negation)
             return -number;
+
+        if (kind === UnaryOperatorKind.Not) {
+            if (number == 0) return 1;
+            return 0;
+        }
         return number;
     }
 

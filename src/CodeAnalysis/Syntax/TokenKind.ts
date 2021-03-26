@@ -11,7 +11,9 @@ export enum TokenKind {
     CloseBracketToken,
     BinaryAndOperator,
     BinaryOrOperator,
-    
+    EqualityOperator,
+    UnaryNotOperator,
+
     NumberToken,
     BooleanTrueToken,
     BooleanFalseToken,

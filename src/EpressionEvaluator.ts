@@ -17,15 +17,19 @@ function printTree(expression: ExpressionSyntax, indent=""):void {
 
     // operator token
     if (expression.kind === TokenKind.MinusToken ||
-             expression.kind === TokenKind.PlusToken  ||
-             expression.kind === TokenKind.MultiplyToken  ||
-             expression.kind === TokenKind.DivideToken ||
-             expression.kind === TokenKind.OpenBracketToken ||
-             expression.kind === TokenKind.CloseBracketToken ||
-             expression.kind === TokenKind.BinaryAndOperator ||
-             expression.kind === TokenKind.BinaryOrOperator
+        expression.kind === TokenKind.PlusToken  ||
+        expression.kind === TokenKind.MultiplyToken  ||
+        expression.kind === TokenKind.DivideToken ||
+        expression.kind === TokenKind.OpenBracketToken ||
+        expression.kind === TokenKind.BinaryAndOperator ||
+        expression.kind === TokenKind.BinaryOrOperator ||
+        expression.kind === TokenKind.EqualityOperator ||
+        expression.kind === TokenKind.UnaryNotOperator
     ) p = p + " " + expression.token;
     
+    else if (expression.kind === TokenKind.CloseBracketToken)
+        p = expression.token + " " + p;
+             
     console.log(indent, p);
     indent = `${indent}    `;
 

@@ -106,11 +106,21 @@ export class Lexer {
         if (ch === '|') {
             this.next();
             if (this.getChar() == '|')
-            return new SyntaxToken('||', TokenKind.BinaryOrOperator, null);
+                return new SyntaxToken('||', TokenKind.BinaryOrOperator, null);
             // // can add the bitwise |
             // else 
             //     return new SyntaxToken('&&', TokenKind.BitwiseOrOperator, null);
         }
+
+        // equals operator
+        if (ch === '=') {
+            this.next();
+            if (this.getChar() === '=')
+                return new SyntaxToken('==', TokenKind.EqualityOperator, null)
+        }
+
+        if (ch === '!')
+            return new SyntaxToken('!', TokenKind.UnaryNotOperator, null);
 
         if (ch === '+')
             return new SyntaxToken('+', TokenKind.PlusToken, null);
