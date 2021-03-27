@@ -28,16 +28,41 @@
 
 .editorContainer,
 .outputContainer {
-  overflow: auto;
   color: #fff;
   padding: 10px;
 }
 
 .editorContainer {
   background-color: var(--editor-color);
+  position: relative;
+  font-size: var(--editor-font-size);
+  overflow-y: hidden;
 }
 
 .outputContainer {
   background-color: var(--output-color);
-  overflow-x: none;
+  line-height: var(--editor-line-height);
+}
+
+.editorContainer .editor {
+  height: calc(100% - 10px);
+  outline: none;
+  position: absolute;
+  left: calc(2 * var(--gutter-width) + var(--editor-gutter-space));
+  width: calc(100% - var(--gutter-width) - var(--editor-gutter-space) - 10px);
+  letter-spacing: 1px;
+  overflow: auto;
+}
+
+.editorContainer .gutter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-height: 100%;
+  padding: 11px var(--gutter-width);
+  padding-bottom: 0;
+  text-align: right;
+  color: #777879;
+  background-color: var(--gutter-background-color);
+  user-select: none;
 }

@@ -1,7 +1,13 @@
 :root {
   --background-color: #33363A;
+
   --editor-color: #22272E;
   --output-color: #1B2027;
+  --gutter-width: 10px;
+  --gutter-background-color: #1B2027;
+  --editor-line-height: 22px;
+  --editor-font-size: 15px;
+  --editor-gutter-space: 15px;
   
   --scrollbar-background: #2e2e30;
   --scrollbar-track-background: #4b4b4d;
