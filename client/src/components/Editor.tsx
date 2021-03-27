@@ -1,14 +1,26 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
+import { EditorContext } from '../context/EditorContext';
 
 const Editor: React.FC = () => {
 
-  const editor = useRef<HTMLDivElement>(null);
+  const editor = useRef<HTMLTextAreaElement>(null);
+
+  const { setEditorData, run } = useContext(EditorContext);
 
   useEffect(() => {
     if (editor.current)
       editor.current.focus();
   } , []);
 
+  const captureInput = (_: React.KeyboardEvent<HTMLTextAreaElement>): void =>{
+    setEditorData((editor.current?.value));
+  }
+
+  const keyDownEvents = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
+    if (e.key === 'Enter' && e.altKey) run();
+  }
+  
+  
   return (
       // document.documentElement.style.setProperty('--your-variable', '#YOURCOLOR');
       <div className="editorContainer">
@@ -19,14 +31,15 @@ const Editor: React.FC = () => {
             })
           }
         </div>
-        <div 
+        <textarea 
           ref={editor}
           className="editor" 
-          contentEditable={true}
           spellCheck={false}
           autoCapitalize="off"
           autoCorrect="off"
-        ></div>
+          onKeyUp={e => captureInput(e)}
+          onKeyDown={e => keyDownEvents(e)}
+        ></textarea>
       </div>
   )
 }

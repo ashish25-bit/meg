@@ -29,15 +29,18 @@
 }
 
 * {
-    margin: 0;
-    padding: 0;
-  }
-  
+  margin: 0;
+  padding: 0;
+}
+
+body, input, ::placeholder, textarea, button {
+  font-family: Montserrat-Light;
+}
+
 body {
-    overflow-x: hidden;
-    box-sizing: border-box;
-    background-color: var(--background-color);
-    font-family: Montserrat-Light;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  background-color: var(--background-color);
 }
 
 a {

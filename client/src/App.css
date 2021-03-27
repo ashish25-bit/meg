@@ -52,6 +52,10 @@
   width: calc(100% - var(--gutter-width) - var(--editor-gutter-space) - 10px);
   letter-spacing: 1px;
   overflow: auto;
+  resize: none;
+  background-color: rgba(255, 255, 255, 0.0);
+  border: none;
+  color: #fff;
 }
 
 .editorContainer .gutter {
@@ -65,4 +69,17 @@
   color: #777879;
   background-color: var(--gutter-background-color);
   user-select: none;
+}
+
+.btnTitle {
+  position: absolute;
+  z-index: 10000;
+  right: -10px;
+  bottom: -10px;
+  font-size: 10px;
+  padding: 5px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  color: #fff;
+  transition: all ease 0.5s;
 }
