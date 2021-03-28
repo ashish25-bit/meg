@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import { EditorContext } from '../context/EditorContext';
+import { EditorContext } from '../utils/EditorContext';
 
 const Editor: React.FC = () => {
 

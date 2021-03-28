@@ -1,8 +1,8 @@
 import { useContext } from 'react';
 import runBtn from '../../assets/run.svg';
-import { EditorContext } from '../../context/EditorContext';
+import { EditorContext } from '../../utils/EditorContext';
 import BtnTitle from '../BtnTitle';
-import { ButtonProp } from './ButtonProp';
+import { ButtonProp } from '../../utils/ButtonProp';
 
 const RunBtn = ({ width }: ButtonProp) => {
 

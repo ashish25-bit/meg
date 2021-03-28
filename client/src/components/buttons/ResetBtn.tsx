@@ -1,13 +1,17 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import resetBtn from '../../assets/reset.svg';
-import { EditorContext } from '../../context/EditorContext';
+import { EditorContext } from '../../utils/EditorContext';
 import BtnTitle from '../BtnTitle';
-import { ButtonProp } from './ButtonProp';
+import { ButtonProp } from '../../utils/ButtonProp';
 
 const ResetBtn = ({ width }: ButtonProp) => {
 
-  const { setEditorData } = useContext(EditorContext);
-  const clickHandler = (): void => setEditorData('');
+  const { setEditorData, setOutputData } = useContext(EditorContext);
+  
+  const clickHandler = (): void => {
+    setEditorData('');
+    setOutputData(null);
+  }
 
   return (
     <BtnTitle title="Alt + X">

@@ -2,19 +2,23 @@ import React, { useState } from 'react';
 import ButtonContainer from './ButtonContainer';
 import Editor from './Editor';
 import Output from './Output';
-import { EditorContext } from '../context/EditorContext';
+import { EditorContext } from '../utils/EditorContext';
+import { expressionEvaluator } from '../compiler/EpressionEvaluator';
 
 const MainContainer: React.FC = () =>  {
 
   const [editorData, setEditorData] = useState("");
-  const [outputData, setOutputData] = useState("");
+  const [outputData, setOutputData] = useState(null);
 
   const run = () => {
-    setOutputData(editorData);
     if (!editorData.trim().length) {
       alert('No input data present');
       return
     }
+    
+    const data: any = expressionEvaluator(editorData.trim());
+    console.log(data)
+    setOutputData(data);
   }
 
   return (
@@ -23,7 +27,8 @@ const MainContainer: React.FC = () =>  {
         setEditorData, 
         editorData,
         outputData,
-        run
+        run,
+        setOutputData
       }}
     >
       <div className="mainContainer">

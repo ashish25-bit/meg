@@ -34,7 +34,7 @@ export class Lexer {
 
     isAlpha(): boolean {
         const char: string = this.getChar();
-        return (char >= 'a' && char <= 'z') || char >= 'A' && char <= 'Z';
+        return (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z');
     }
 
     nextToken(): SyntaxToken {
@@ -48,7 +48,7 @@ export class Lexer {
         // is a whiteSpace
         if (ch === ' ') {
             let str = "";
-            while (this.getChar() == ' ') {
+            while (this.getChar() === ' ') {
                 str = str + ' ';
                 this.next();
             }
@@ -99,7 +99,7 @@ export class Lexer {
         // binary and operator
         if (ch === '&') {
             this.next();
-            if (this.getChar() == '&')
+            if (this.getChar() === '&')
                 return new SyntaxToken('&&', TokenKind.BinaryAndOperator, null);
             // // can add the bitwise &
             // else 
@@ -109,7 +109,7 @@ export class Lexer {
         // binary or operator
         if (ch === '|') {
             this.next();
-            if (this.getChar() == '|')
+            if (this.getChar() === '|')
                 return new SyntaxToken('||', TokenKind.BinaryOrOperator, null);
             // // can add the bitwise |
             // else 
@@ -125,7 +125,7 @@ export class Lexer {
 
         if (ch === '!') {
             this.next();
-            if (this.getChar() == '=')
+            if (this.getChar() === '=')
                 return new SyntaxToken('!=', TokenKind.NotEqualOperator, null);
             
             this.position--;

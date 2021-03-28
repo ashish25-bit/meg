@@ -64,7 +64,7 @@ export class Parser {
 
         let unaryPrecedence = unaryOperatorPrecedence(this.getCurrent().kind);
 
-        if (unaryPrecedence != 0 && unaryPrecedence >= precedence) {
+        if (unaryPrecedence !== 0 && unaryPrecedence >= precedence) {
             let operator: SyntaxToken = this.nextToken();
 
             // if the expression is -1*2+3
@@ -79,9 +79,9 @@ export class Parser {
         else
             left = this.parsePrimaryExpression();
 
-        while (this.getCurrent().kind != TokenKind.EndOfFileToken) {
+        while (this.getCurrent().kind !== TokenKind.EndOfFileToken) {
             let nextPrecendence:number = binaryOperatorPrecedence(this.getCurrent().kind);
-            if (nextPrecendence == 0 || nextPrecendence <= precedence)
+            if (nextPrecendence === 0 || nextPrecendence <= precedence)
                 break;
 
             let operatorToken = this.nextToken();
