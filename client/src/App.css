@@ -15,15 +15,11 @@
   margin-top: 20px;
 }
 
-.runBtn img {
-  width: 80px;
-}
-
 .wrapperContainer {
   height: calc( 100vh - 150px );
   margin-top: 10px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
 }
 
 .editorContainer,
@@ -69,6 +65,16 @@
   color: #777879;
   background-color: var(--gutter-background-color);
   user-select: none;
+}
+
+.buttonContainer {
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  grid-gap: 10px;
+}
+
+.buttonContainer .btnTitleContaniner {
+  position: relative;
 }
 
 .btnTitle {

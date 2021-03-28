@@ -5,19 +5,19 @@ const Editor: React.FC = () => {
 
   const editor = useRef<HTMLTextAreaElement>(null);
 
-  const { setEditorData, run } = useContext(EditorContext);
+  const { setEditorData, run, editorData } = useContext(EditorContext);
 
   useEffect(() => {
     if (editor.current)
       editor.current.focus();
   } , []);
-
-  const captureInput = (_: React.KeyboardEvent<HTMLTextAreaElement>): void =>{
-    setEditorData((editor.current?.value));
-  }
-
+  
   const keyDownEvents = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
+    // run shortcut
     if (e.key === 'Enter' && e.altKey) run();
+
+    // reset shortcut
+    if ((e.key === 'x' || e.key === 'X') && e.altKey) setEditorData("")
   }
   
   
@@ -32,12 +32,13 @@ const Editor: React.FC = () => {
           }
         </div>
         <textarea 
+          value={editorData}
           ref={editor}
           className="editor" 
           spellCheck={false}
           autoCapitalize="off"
           autoCorrect="off"
-          onKeyUp={e => captureInput(e)}
+          onInput={e => setEditorData((editor.current?.value))}
           onKeyDown={e => keyDownEvents(e)}
         ></textarea>
       </div>

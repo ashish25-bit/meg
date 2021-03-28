@@ -13,7 +13,7 @@ const BtnTitle = (props: TitleProp) => {
     <div
       onMouseEnter={() => setIsTitleVisible(true)}
       onMouseLeave={() => setIsTitleVisible(false)}
-      style={{ position: "relative", display: 'inline-block' }}
+      className="btnTitleContaniner"
     >
       {props.children}
       {isTitleVisible && <div className="btnTitle">{props.title}</div>}

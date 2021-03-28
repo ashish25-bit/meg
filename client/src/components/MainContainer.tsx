@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import RunBtn from './RunBtn';
+import ButtonContainer from './ButtonContainer';
 import Editor from './Editor';
 import Output from './Output';
 import { EditorContext } from '../context/EditorContext';
@@ -28,7 +28,7 @@ const MainContainer: React.FC = () =>  {
     >
       <div className="mainContainer">
 
-        <RunBtn />
+        <ButtonContainer />
         
         <div className="wrapperContainer">
           <Editor />
