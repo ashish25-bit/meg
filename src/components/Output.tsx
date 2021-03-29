@@ -15,7 +15,7 @@ const Output: React.FC = () => {
               <div>{
                 outputData.data.map((e:string | number, index: number) => {
                   return (
-                    <div style={{ color: "red" }} key={index}>{e}</div>
+                    <div style={{ color: "#F74000" }} key={index}>{e}</div>
                   )
                 })
               }</div>

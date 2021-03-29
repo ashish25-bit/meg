@@ -22,6 +22,17 @@
   grid-template-columns: 2fr 1fr;
 }
 
+@media only screen and (max-width: 769px) {
+  .wrapperContainer {
+    display: block;
+    margin-bottom: 100px;
+  }
+  .editorContainer,
+  .outputContainer {
+    height: 50%;
+  }
+}
+
 .editorContainer,
 .outputContainer {
   color: #fff;
@@ -42,13 +53,11 @@
 
 .editorContainer .editor {
   height: calc(100% - 10px);
-  outline: none;
   position: absolute;
   left: calc(2 * var(--gutter-width) + var(--editor-gutter-space));
   width: calc(100% - var(--gutter-width) - var(--editor-gutter-space) - 10px);
   letter-spacing: 1px;
   overflow: auto;
-  resize: none;
   background-color: rgba(255, 255, 255, 0.0);
   border: none;
   color: #fff;
@@ -71,6 +80,7 @@
   display: grid;
   grid-template-columns: repeat(14, 1fr);
   grid-gap: 10px;
+  user-select: none;
 }
 
 .buttonContainer .btnTitleContaniner {

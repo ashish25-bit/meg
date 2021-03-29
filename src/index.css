@@ -47,14 +47,19 @@ a {
   text-decoration: none;
 }
 
-input, button, a {
+input, button, a, textarea {
   outline: none;
+  border: none;
 }
 
 button {
   cursor: pointer;
   border: none;
   background-color: rgba(255, 255, 255, 0.0);
+}
+
+textarea {
+  resize: none;
 }
 
 ::-webkit-scrollbar {
@@ -71,4 +76,11 @@ button {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #3a3a3a; 
+}
+
+.dead-center {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
 }
