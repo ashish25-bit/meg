@@ -79,8 +79,6 @@ textarea {
 }
 
 .dead-center {
-  display: flex;
-  text-align: center;
-  justify-content: center;
+  display: grid;
   align-items: center;
 }

@@ -14,32 +14,49 @@ const Sample = () => {
 			setLines(prevState => prevState + 1);
 			setCurrentLine(prevState => prevState + 1);
 		}
-
+	}
+	
+	function inputText(e: React.FormEvent<HTMLInputElement>) {
 		if (currentLineRef.current && inputRef.current) {
-			currentLineRef.current.innerText = inputRef.current?.value;
-			console.log(currentLineRef.current.clientWidth)
-			inputRef.current.style.width = `${currentLineRef.current.clientWidth + 4}px`;
+			inputRef.current.style.minWidth = `${currentLineRef.current.scrollWidth - 20}px`;
+			currentLineRef.current.innerText = inputRef.current.value;
 		}
 	}
 
   return (
-    <div style={{...main, position: "relative"}}>
-			<div style={{...gutter, position: 'absolute', textAlign: "center"}}>
-				{
-					new Array(lines).fill(0).map((_, index) => { return (<div ref={ele} className='dead-center' style={number} key={index}>{index+1}</div>) })
-				}
+    <div style={{ ...main, overflowY: 'auto', overflowX: 'hidden' }}>
+			<div style={{...gutter, textAlign: "center"}}>
+			{
+				new Array(lines).fill(0).map((_, index) => { return (
+					<div ref={ele} className='dead-center' style={number} key={index}>{index+1}</div>) 
+				})
+			}
 			</div>
-			<div style={{...editor, position: 'absolute'}}>
+			<div style={{...editor, position: 'relative', overflowX: 'auto'}}>
 				<input
 					ref={inputRef}
 					onKeyDown={e => captureKeyDown(e)} 
-					style={{...input, position: 'relative', zIndex: 10, top: `${(lines-1)*26}px`}}
+					onInput={e => inputText(e)} 
+					style={{...input, position: 'absolute', zIndex: 100000, top: `${(lines-1)*26}px`}}
 				/>
 				{
 					new Array(lines).fill(0).map((_, index) => { return (
 						index + 1 === currentLine ? 
-							<div ref={currentLineRef} key={index} style={{ opacity: 0, background: 'red', height:'26px', minWidth: 'calc(95% - 20px)' }}></div> : 
-							<div style={{ height:'26px', width: '100%' }} key={index}>{currentLine} - {index+1}</div>
+							<div ref={currentLineRef} key={index} 
+							className='dead-center'
+							style={{
+								padding: '0 10px',
+								opacity: 0,
+								// background: 'red',
+								height:'26px', 
+								minWidth: 'calc(100% - 20px)',
+								fontSize: '15px',
+							}}></div> : 
+							<div style={{
+								height:'26px', padding: '0 10px',
+								minWidth: 'calc(100% - 20px)',
+								fontSize: '15px'
+							}} key={index} className="dead-center" ></div>
 					)})
 				}
 			</div>
@@ -52,12 +69,11 @@ const main = {
 	margin: "40px auto",
 	height: "80vh",
 	background: "#22272E",
-	overflow: 'auto'
+	display: 'grid',
+	gridTemplateColumns: '5% 95%'
 };
 
 const gutter = {
-	minWidth: '5%',
-	height: "100%",
 	background: "rgba(0, 0, 0, 0.25)",
 	top: "0",
 	left: '0',
@@ -65,25 +81,24 @@ const gutter = {
 };
 
 const editor = {
-	minWidth: "95%",
-	height: "100%",
 	background: "#22272E",
 	top: "0",
+	color: '#fff',
 	right: '0',
 };
 
 const input = {
 	height: '26px',
 	background: "#ffffff38",
-	left: '5%',
-	minWidth: 'calc(95% - 20px)',
+	minWidth: 'calc(100% - 20px)',
 	color: '#fff',
-	padding: '0 10px'
+	padding: '0 10px',
+	fontSize: '15px',
 }
 
 const number = { 
 	height: '26px', 
-	fontSize: '10px'
+	fontSize: '10px',
 }
 
 export default Sample;

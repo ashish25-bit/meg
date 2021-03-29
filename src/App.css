@@ -25,11 +25,11 @@
 @media only screen and (max-width: 769px) {
   .wrapperContainer {
     display: block;
-    margin-bottom: 100px;
+    min-height: 150vh;
   }
   .editorContainer,
   .outputContainer {
-    height: 50%;
+    height: 45%;
   }
 }
 
