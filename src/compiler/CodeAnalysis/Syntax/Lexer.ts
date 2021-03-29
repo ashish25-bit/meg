@@ -121,6 +121,9 @@ export class Lexer {
             this.next();
             if (this.getChar() === '=')
                 return new SyntaxToken('==', TokenKind.EqualityOperator, null)
+
+            this.position--;
+            return new SyntaxToken('=', TokenKind.AssignmentOperatorToken, null); 
         }
 
         if (ch === '!') {
@@ -131,6 +134,9 @@ export class Lexer {
             this.position--;
             return new SyntaxToken('!', TokenKind.UnaryNotOperator, null);
         }
+
+        if (ch === '%')
+            return new SyntaxToken('%', TokenKind.ModulusToken, null);
 
         if (ch === '+')
             return new SyntaxToken('+', TokenKind.PlusToken, null);

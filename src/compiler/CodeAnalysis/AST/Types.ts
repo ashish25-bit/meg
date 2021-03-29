@@ -4,4 +4,6 @@ export enum Types {
     Object = "object",
     BinaryExpression = "binary-expression",
     UnaryExpression = "unary-expression",
+    InitializationExpression = "initialization-expression",
+    VariableExpression = "variable"
 };

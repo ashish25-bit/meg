@@ -6,5 +6,7 @@ export enum BinaryOperatorKind {
     OrOperator,
     AndOperator,
     EqualsOperator,
-    NotEquals
+    NotEquals,
+    Modulus,
+    Assignment
 }

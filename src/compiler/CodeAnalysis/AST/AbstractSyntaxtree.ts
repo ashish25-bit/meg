@@ -6,6 +6,8 @@ import { Expression } from './Expression';
 import { LiteralExpression } from './LiteralExpression';
 import { UnaryExpression } from './UnaryExpression';
 import { UnaryOperatorKind } from './UnaryOperatorKind';
+import { VariableExpression } from './VariableExpression';
+import { InitializationExpression } from './InitializationExpression';
 
 export class Binder {
 
@@ -36,9 +38,19 @@ export class Binder {
             case TokenKind.BinaryExpressionToken:
                 return this.bindBinaryExpression(syntax);
 
+            case TokenKind.VariableExpression:
+                return this.bindVariableExpression(syntax);
+
+            case TokenKind.InitializationExpression:
+                return this.bindInitializationExpression(syntax);
+
             default:
                 throw new Error(`Unexpected syntax kind: '${TokenKind[syntax.kind]}'`);
         }
+    }
+
+    bindVariableExpression(syntax: ExpressionSyntax): Expression {
+        return new VariableExpression(syntax.token);
     }
 
     bindLiteralExpression(syntax: ExpressionSyntax): Expression {
@@ -50,25 +62,23 @@ export class Binder {
         let operand: Expression = this.bind(syntax.operand);
         let operator: UnaryOperatorKind | null = this.bindUnaryOperatorKind(syntax.operator.kind, operand);
 
-        if (operator == null) {
-            this._errors.push(`Unary operator '${syntax.operator.token}' is not defined for ${operand.type}`)
-            return operand;
-        }
-
         return new UnaryExpression(operand, {kind: operator, value: syntax.operator.token});
     }
 
     bindBinaryExpression(syntax: ExpressionSyntax): Expression {
         let left: Expression = this.bind(syntax.left);
         let right: Expression = this.bind(syntax.right);
-        let operator: BinaryOperatorKind | null = this.bindBinaryOperatorKind(syntax.operator.kind, left, right);
-
-        if (operator === null) {
-            this._errors.push(`Binary operator '${syntax.operator.token}' is not defined for ${left.type} && ${right.type} `)
-            return left;
-        }
+        let operator: BinaryOperatorKind | null = this.bindBinaryOperatorKind(syntax.operator.kind);
 
         return new BinaryExpression(left, {kind: operator, value: syntax.operator.token}, right);
+    }
+
+    bindInitializationExpression(syntax: ExpressionSyntax): Expression {
+        let left: Expression = this.bind(syntax.left);
+        let right: Expression = this.bind(syntax.right);
+        let operator: BinaryOperatorKind | null = this.bindBinaryOperatorKind(syntax.operator.kind);
+
+        return new InitializationExpression(left, { kind: operator, value: '=' }, right); 
     }
 
     bindUnaryOperatorKind(kind: TokenKind, operand: Expression): UnaryOperatorKind | null {
@@ -89,7 +99,7 @@ export class Binder {
         }
     } 
 
-    bindBinaryOperatorKind(kind: TokenKind, lType: Expression, rType: Expression): BinaryOperatorKind | null {
+    bindBinaryOperatorKind(kind: TokenKind): BinaryOperatorKind | null {
 
         // console.log(lType.type, rType.type);
         switch(kind) {
@@ -116,6 +126,12 @@ export class Binder {
             
             case TokenKind.NotEqualOperator:
                 return BinaryOperatorKind.NotEquals;
+
+            case TokenKind.ModulusToken:
+                return BinaryOperatorKind.Modulus;
+
+            case TokenKind.AssignmentOperatorToken:
+                return BinaryOperatorKind.Assignment;
 
             default:
                 throw new Error(`Unexpected binary token kind '${kind}'`);

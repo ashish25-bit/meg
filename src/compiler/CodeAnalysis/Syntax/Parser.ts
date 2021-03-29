@@ -10,6 +10,8 @@ import {
     binaryOperatorPrecedence,
     unaryOperatorPrecedence
 } from './OperatorPrecedence';
+import { InitializationExpressionSyntax } from './InitializationExpressionSyntax';
+import { VariableExpressionSyntax } from './VariableExpressionSyntax';
 
 export class Parser {
     private expression: string;
@@ -59,7 +61,28 @@ export class Parser {
         return expression;
     }
 
-    parseExpression(precedence: number = 0): ExpressionSyntax {
+    parseExpression(): ExpressionSyntax {
+        return this.parseAssignmentExpression();
+    }
+
+    parseAssignmentExpression(): ExpressionSyntax {
+        let left = this.parseBinaryExpression();
+        
+        if (this.getCurrent().kind === TokenKind.AssignmentOperatorToken) {
+            let operator = new SyntaxToken(this.nextToken().token, TokenKind.AssignmentOperatorToken, null);
+            let right = this.parseAssignmentExpression();
+            left = new InitializationExpressionSyntax(left, operator, right);
+            return left;
+        }
+
+        if (this.getCurrent().kind === TokenKind.EndOfFileToken)
+            return left;
+        
+        this.position--;
+        return this.parseBinaryExpression();
+    }
+
+    parseBinaryExpression(precedence: number = 0): ExpressionSyntax {
         let left:ExpressionSyntax;
 
         let unaryPrecedence = unaryOperatorPrecedence(this.getCurrent().kind);
@@ -72,7 +95,7 @@ export class Parser {
                 left = new UnaryExpressionSyntax(operator, this.parsePrimaryExpression());
             
             else {
-                let operand: ExpressionSyntax = this.parseExpression();
+                let operand: ExpressionSyntax = this.parseBinaryExpression();
                 left = new UnaryExpressionSyntax(operator, operand)
             }
         }
@@ -81,11 +104,11 @@ export class Parser {
 
         while (this.getCurrent().kind !== TokenKind.EndOfFileToken) {
             let nextPrecendence:number = binaryOperatorPrecedence(this.getCurrent().kind);
-            if (nextPrecendence === 0 || nextPrecendence <= precedence)
+            if (nextPrecendence === 1 || nextPrecendence === 0 || nextPrecendence <= precedence)
                 break;
 
             let operatorToken = this.nextToken();
-            let right = this.parseExpression(nextPrecendence);
+            let right = this.parseBinaryExpression(nextPrecendence);
             left = new BinaryExpressionSyntax(left, operatorToken, right);
         }
         return left;
@@ -102,7 +125,7 @@ export class Parser {
     parsePrimaryExpression(): ExpressionSyntax {
         if (this.getCurrent().kind === TokenKind.OpenBracketToken) {
             let left = this.nextToken();
-            let expression = this.parseExpression();
+            let expression = this.parseBinaryExpression();
             if (this.matchKind(TokenKind.CloseBracketToken))
                 return new ParenthesizeExpressionSyntax(left, expression, this.nextToken());
         }
@@ -114,6 +137,9 @@ export class Parser {
             const kind = this.getCurrent().value === true ? TokenKind.BooleanTrueToken : TokenKind.BooleanFalseToken;
             return new LiteralExpressionSyntax(this.nextToken().value, kind);
         }
+
+        else if (this.getCurrent().kind === TokenKind.IdentifierToken)
+            return new VariableExpressionSyntax(this.nextToken().token);
 
         if (this.matchKind(TokenKind.NumberToken))
             return new LiteralExpressionSyntax(this.nextToken().value, TokenKind.NumberToken);
