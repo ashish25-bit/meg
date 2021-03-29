@@ -35,8 +35,8 @@
 
 .editorContainer,
 .outputContainer {
+  font-size: var(--editor-font-size);
   color: #fff;
-  padding: 10px;
 }
 
 .editorContainer {
@@ -44,36 +44,55 @@
   position: relative;
   font-size: var(--editor-font-size);
   overflow-y: hidden;
+  display: grid;
+  grid-template-columns: var(--gutter-width) calc(100% - var(--gutter-width));
 }
 
 .outputContainer {
+  padding: 10px;
   background-color: var(--output-color);
   line-height: var(--editor-line-height);
 }
 
 .editorContainer .editor {
   height: calc(100% - 10px);
-  position: absolute;
-  left: calc(2 * var(--gutter-width) + var(--editor-gutter-space));
-  width: calc(100% - var(--gutter-width) - var(--editor-gutter-space) - 10px);
-  letter-spacing: 1px;
-  overflow: auto;
-  background-color: rgba(255, 255, 255, 0.0);
-  border: none;
   color: #fff;
+  position: relative;
+}
+
+.editorContainer .editor .editor-input {
+  height: var(--editor-line-height);
+  background: var(--editor-current-line);
+  color: #fff;
+  padding: 0 10px;
+  position: absolute;
+  left: 0;
+  width: calc(100% - 20px);
+  z-index: 100000;
+  font-size: var(--editor-font-size);
+}
+
+.editorContainer .editor .editor-line {
+  height: var(--editor-line-height);
+  padding: 0 10px;
+  display: grid;
+  align-items: center;
+  font-size: var(--editor-font-size);
+}
+.editorContainer .editor .editor-line.current-line {
+  opacity: 0;
 }
 
 .editorContainer .gutter {
-  position: absolute;
-  top: 0;
-  left: 0;
   min-height: 100%;
-  padding: 11px var(--gutter-width);
   padding-bottom: 0;
-  text-align: right;
   color: #777879;
   background-color: var(--gutter-background-color);
   user-select: none;
+}
+
+.editorContainer .gutter div {
+  height: var(--editor-line-height);
 }
 
 .buttonContainer {

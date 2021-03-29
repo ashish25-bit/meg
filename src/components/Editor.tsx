@@ -1,46 +1,79 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { EditorContext } from '../utils/EditorContext';
+import Gutter from './Gutter';
 
 const Editor: React.FC = () => {
 
-  const editor = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [lines, setLines] = useState(1);
+  const [currentLine, setCurrentLine] = useState(1);
+  const [lineData, setLineData] = useState(Array<string>());
 
   const { setEditorData, run, editorData } = useContext(EditorContext);
 
-  useEffect(() => {
-    if (editor.current)
-      editor.current.focus();
-  } , []);
-  
-  const keyDownEvents = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
-    // run shortcut
-    if (e.key === 'Enter' && e.altKey) run();
+  function captureKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
 
-    // reset shortcut
-    if ((e.key === 'x' || e.key === 'X') && e.altKey) setEditorData("")
+    // run command
+    // if (e.key === 'Enter' && e.altKey) {
+    //   run();
+    //   return;
+    // }
+
+    // reset command
+    if ((e.key === 'x' || e.key === 'X') && e.altKey) {
+      setEditorData("");
+      setLineData([]);
+      setLines(1);
+      setCurrentLine(1);
+      return;
+    }
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      run();
+      setLines(prevState => prevState + 1);
+      setCurrentLine(prevState => prevState + 1);
+      setLineData(prevData => [...prevData, `__ ${editorData}`]);
+      setEditorData("");
+    }
   }
-  
-  
+
   return (
       // document.documentElement.style.setProperty('--your-variable', '#YOURCOLOR');
       <div className="editorContainer">
-        <div className="gutter">
+        <Gutter lines={lines} />
+
+        <div className="editor">
+          <input
+            value={editorData}
+            className="editor-input"
+            ref={inputRef}
+            style={{ top: `${( lines - 1 ) * 26}px` }}
+            onKeyDown={e => captureKeyDown(e)}
+            onInput={e => setEditorData(inputRef.current?.value)}
+            spellCheck={false}
+            autoCapitalize="off"
+            autoCorrect="off"
+            autoComplete="off"
+            autoFocus={true}
+          />
           {
-            new Array(1).fill(0).map((_, index) => {
-              return <div key={index}>{index + 1}</div>
+            new Array(lines).fill(0).map((_, i) => {
+              return (
+                <div 
+                  className = {
+                    i+1 === currentLine ? 
+                      'current-line editor-line' : 
+                      'editor-line'
+                  }
+                  key={i}
+                >
+                  {i + 1 === currentLine ? "" : lineData[i]}
+                </div>
+              )
             })
           }
         </div>
-        <textarea 
-          value={editorData}
-          ref={editor}
-          className="editor" 
-          spellCheck={false}
-          autoCapitalize="off"
-          autoCorrect="off"
-          onInput={e => setEditorData((editor.current?.value))}
-          onKeyDown={e => keyDownEvents(e)}
-        ></textarea>
       </div>
   )
 }

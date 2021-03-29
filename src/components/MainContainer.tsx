@@ -3,7 +3,7 @@ import ButtonContainer from './ButtonContainer';
 import Editor from './Editor';
 import Output from './Output';
 import { EditorContext } from '../utils/EditorContext';
-import { expressionEvaluator } from '../compiler/EpressionEvaluator';
+import { expressionEvaluator } from '../compiler/ExpressionEvaluator';
 
 const MainContainer: React.FC = () =>  {
 
@@ -11,13 +11,12 @@ const MainContainer: React.FC = () =>  {
   const [outputData, setOutputData] = useState(null);
 
   const run = () => {
-    if (!editorData.trim().length) {
-      alert('No input data present');
-      return
-    }
+    // if (!editorData.trim().length) {
+    //   alert('No input data present');
+    //   return
+    // }
     
     const data: any = expressionEvaluator(editorData.trim());
-    console.log(data)
     setOutputData(data);
   }
 

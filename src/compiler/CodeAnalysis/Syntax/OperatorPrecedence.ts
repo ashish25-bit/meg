@@ -1,11 +1,13 @@
 import { TokenKind } from "./TokenKind";
 
+const MAX = 8;
+
 export function unaryOperatorPrecedence(kind: TokenKind):number {
     switch(kind) {
         case TokenKind.MinusToken:
         case TokenKind.PlusToken:
         case TokenKind.UnaryNotOperator:
-            return 6;
+            return MAX;
         
         default:
             return 0;
@@ -14,23 +16,30 @@ export function unaryOperatorPrecedence(kind: TokenKind):number {
 
 export function binaryOperatorPrecedence(kind: TokenKind): number {
     switch(kind) {
+
+        case TokenKind.ModulusToken:
+            return MAX - 1;
+
         case TokenKind.MultiplyToken:
         case TokenKind.DivideToken:
-            return 5;
+            return MAX - 2;
         
         case TokenKind.PlusToken:
         case TokenKind.MinusToken:
-            return 4;
+            return MAX - 3;
         
         case TokenKind.EqualityOperator:
         case TokenKind.NotEqualOperator:
-            return 3;
+            return MAX - 4;
 
         case TokenKind.BinaryAndOperator:
-            return 2;
+            return MAX - 5;
 
         case TokenKind.BinaryOrOperator:
-            return 1;
+            return MAX - 6;
+
+        case TokenKind.AssignmentOperatorToken:
+            return MAX - 7;
 
         default:
             return 0;

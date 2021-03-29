@@ -3,11 +3,12 @@
 
   --editor-color: #22272E;
   --output-color: #1B2027;
-  --gutter-width: 10px;
+  --gutter-width: 70px;
   --gutter-background-color: #1B2027;
-  --editor-line-height: 22px;
   --editor-font-size: 15px;
   --editor-gutter-space: 15px;
+  --editor-line-height: 26px;
+  --editor-current-line: #fffefe1f;
   
   --scrollbar-background: #2e2e30;
   --scrollbar-track-background: #4b4b4d;
@@ -81,4 +82,5 @@ textarea {
 .dead-center {
   display: grid;
   align-items: center;
+  justify-content: center;
 }

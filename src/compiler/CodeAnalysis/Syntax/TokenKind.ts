@@ -3,16 +3,19 @@ export enum TokenKind {
     WhiteSpaceToken,
     EndOfFileToken,
 
-    PlusToken,
-    MinusToken,
-    MultiplyToken,
-    DivideToken,
     OpenBracketToken,
     CloseBracketToken,
+    UnaryNotOperator,
+    ModulusToken,
+    MultiplyToken,
+    DivideToken,
+    PlusToken,
+    MinusToken,
     BinaryAndOperator,
     BinaryOrOperator,
     EqualityOperator,
-    UnaryNotOperator,
+    NotEqualOperator,
+    AssignmentOperatorToken,
 
     NumberToken,
     BooleanTrueToken,
@@ -22,5 +25,6 @@ export enum TokenKind {
     UnaryExpressionToken,
     BinaryExpressionToken,
     ParenthesizedExpression,
-    NotEqualOperator
+    VariableExpression,
+    InitializationExpression
 };
