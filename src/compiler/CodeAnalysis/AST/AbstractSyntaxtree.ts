@@ -95,7 +95,7 @@ export class Binder {
                 return UnaryOperatorKind.Not;
 
             default:
-                throw new Error(`Unexpected unary token kind '${kind}'`);
+                throw new Error(`Unexpected unary token kind '${TokenKind[kind]}'`);
         }
     } 
 
@@ -134,7 +134,7 @@ export class Binder {
                 return BinaryOperatorKind.Assignment;
 
             default:
-                throw new Error(`Unexpected binary token kind '${kind}'`);
+                throw new Error(`Unexpected binary token kind '${TokenKind[kind]}'`);
         }
     }
 }

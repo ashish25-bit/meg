@@ -9,7 +9,7 @@ export class Evaluate {
     private _errors: Array<string>;
 
     constructor() {
-        this._variables = new Map<string, number>();
+        this._variables = new Map<string, number | undefined>();
         this._errors = [];
         this._result = undefined;
     }
@@ -29,8 +29,6 @@ export class Evaluate {
     evaluate(exp: Expression, map: Map<string, number>): void {
         this._variables = map;
         this._result = this.evaluateExpression(exp);
-        if (this.errors.length)
-            this._result = undefined;
     }
 
     evaluateExpression(exp: Expression): number {
@@ -38,15 +36,15 @@ export class Evaluate {
         if (exp.kind === NodeKind.VariableExpression) {
             let data: number | undefined = this._variables.get(exp.value);
             if (data === undefined) {
-                this._errors.push(`Variable '${exp.value}' is used before initialization. Result Undefined.`);
-                return -1;
+                this._result = undefined;
+                throw new Error(`Variable '${exp.value}' is used before initialization. Result Undefined.`)
             }
             return data;
         }
 
         // initialization expression
         if (exp.kind === NodeKind.InitializationExpression) {
-            // this._variables.set(exp.left.value, daa);
+            this._variables.set(exp.left.value, undefined);
             let data: number = this.evaluateExpression(exp.right);
             this._variables.set(exp.left.value, data);
             return data;

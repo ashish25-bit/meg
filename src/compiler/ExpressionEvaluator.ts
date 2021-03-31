@@ -15,25 +15,31 @@ function getReturnData(error: boolean, data: any): ReturnData {
 
 export const expressionEvaluator = (expression: string): any => {
 	
-	const parser = new Parser(expression);
-	const exp:ExpressionSyntax = parser.parser();
+  try {
+    const parser = new Parser(expression);
+    const exp:ExpressionSyntax = parser.parser();
 
-	if (parser.errors.length) 
-    return getReturnData(true, parser.errors);
-		
+    if (parser.errors.length) 
+      return getReturnData(true, parser.errors);
+      
 
-	const AST = new Binder();
-	const ast: Expression = AST.bind(exp);
+    const AST = new Binder();
+    const ast: Expression = AST.bind(exp);
 
-	if (AST.errors.length)
-    return getReturnData(true, AST.errors);
+    if (AST.errors.length)
+      return getReturnData(true, AST.errors);
 
-	const evaluate = new Evaluate();
-  let variables = new Map<string, number>();
-  evaluate.evaluate(ast, variables);
+    const evaluate = new Evaluate();
+    let variables = new Map<string, number>();
+    evaluate.evaluate(ast, variables);
 
-  if (evaluate.errors.length)
-    return getReturnData(true, evaluate.errors);
-  
-  return getReturnData(false, evaluate.result);  
+    if (evaluate.errors.length)
+      return getReturnData(true, evaluate.errors);
+    
+    return getReturnData(false, evaluate.result);
+  }
+  catch (err) {
+    console.log('object')
+    return getReturnData(true, [err.message])
+  }  
 }
