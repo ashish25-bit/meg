@@ -31,6 +31,10 @@
   .outputContainer {
     height: 45%;
   }
+
+  .editorContainer {
+    border-bottom: 1px solid #434242;
+  }
 }
 
 .editorContainer,
@@ -62,7 +66,7 @@
 
 .editorContainer .editor .editor-input {
   height: var(--editor-line-height);
-  background: rgba(255, 255, 255, 0.0);
+  background: var(--editor-current-line);
   color: #fff;
   padding: 0 10px;
   position: absolute;
@@ -80,8 +84,8 @@
   font-size: var(--editor-font-size);
 }
 .editorContainer .editor .editor-line.current-line {
-  background: var(--editor-current-line);
-  color: red;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .editorContainer .gutter {

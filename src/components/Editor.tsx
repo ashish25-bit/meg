@@ -7,9 +7,7 @@ const Editor: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [lines, setLines] = useState(1);
   const [currentLine, setCurrentLine] = useState(1);
-  const [lineData, setLineData] = useState(Array<string>());
-  const lineRef = useRef(Array<HTMLDivElement>());
-  lineRef.current = Array<HTMLDivElement>();
+  const [lineData, setLineData] = useState([""]);
 
   const { setEditorData, run, editorData } = useContext(EditorContext);
 
@@ -33,22 +31,56 @@ const Editor: React.FC = () => {
     if (e.key === 'Enter') {
       e.preventDefault();
       run();
+
+      let newArray = [...lineData];
+      newArray[currentLine - 1] = `${editorData} `;
+      
+      if (lines === currentLine)
+        newArray.push("");
+      else
+        newArray.splice(currentLine, 0, "")
+      
+      setLineData(newArray);
       setLines(prevState => prevState + 1);
       setCurrentLine(prevState => prevState + 1);
-      setLineData(prevData => [...prevData, `__ ${editorData}`]);
       setEditorData("");
     }
+
+    if (e.code === 'Backspace' && editorData === '') {
+      let newArray = lineData.filter((_, index) =>
+        currentLine !== index + 1
+      )
+      setLineData(newArray);
+
+      if (currentLine !== 1) {
+        setLines(prevData => prevData - 1);
+        setCurrentLine(prevData => prevData - 1);
+        setEditorData(newArray[currentLine - 2]);
+      }
+    }
+
+    if (e.code === 'Tab') {
+      e.preventDefault();
+      const newEditorData = `${editorData}\t`;
+      setEditorData(newEditorData);
+    }
+
+  }
+
+  function onBlurEventCapture() {
+    let newArray = [...lineData];
+    newArray[currentLine - 1] = `${editorData} `;
+    setLineData(newArray);
   }
 
   function clickOnLine(lineIndex: number): void {
-    setEditorData(lineData[lineIndex]);
-    setCurrentLine(lineIndex+1)
-  }
-
-  function assignRef(el: HTMLDivElement) {
-    if (el) {
-      lineRef.current.push(el);
-    }
+    setEditorData(
+      lineData[lineIndex] === undefined ? 
+        "" : 
+        lineData[lineIndex]
+    );
+    setCurrentLine(lineIndex+1);
+    inputRef.current?.focus();
   }
 
   return (
@@ -69,22 +101,23 @@ const Editor: React.FC = () => {
           autoCorrect="off"
           autoComplete="off"
           autoFocus={true}
+          onBlur={() => onBlurEventCapture()}
         />
         {
           new Array(lines).fill(0).map((_, i) => (
-            <div
+            <pre
               className={i + 1 === currentLine ?
                 'current-line editor-line' :
                 'editor-line'}
               key={i}
               onClick={() => clickOnLine(i)}
-              ref={assignRef}
             >
               {i + 1 === currentLine ? "" : lineData[i]}
-            </div>
+            </pre>
           ))
         }
       </div>
+      {/* <button onClick={() => console.log(lineData)}>Click</button> */}
     </div>
   )
 }

@@ -46,9 +46,9 @@ export class Lexer {
             return new SyntaxToken('EOF', TokenKind.EndOfFileToken, null);
 
         // is a whiteSpace
-        if (ch === ' ') {
+        if (ch === ' ' || ch === '\t') {
             let str = "";
-            while (this.getChar() === ' ') {
+            while (this.getChar() === ' ' || this.getChar() === '\t') {
                 str = str + ' ';
                 this.next();
             }

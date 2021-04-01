@@ -34,7 +34,7 @@
   padding: 0;
 }
 
-body, input, ::placeholder, textarea, button {
+body, input, ::placeholder, textarea, button, pre {
   font-family: Montserrat-Light;
 }
 
