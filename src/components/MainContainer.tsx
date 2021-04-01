@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import ButtonContainer from './ButtonContainer';
 import Editor from './Editor';
 import Output from './Output';
@@ -9,6 +9,7 @@ const MainContainer: React.FC = () =>  {
 
   const [editorData, setEditorData] = useState("");
   const [outputData, setOutputData] = useState(null);
+  const variables = useRef(new Map<string, number>());
 
   const run = () => {
     // if (!editorData.trim().length) {
@@ -16,8 +17,9 @@ const MainContainer: React.FC = () =>  {
     //   return
     // }
     
-    const data: any = expressionEvaluator(editorData.trim());
+    const data: any = expressionEvaluator(editorData.trim(), variables.current);
     setOutputData(data);
+    console.log(variables.current)
   }
 
   return (

@@ -13,7 +13,7 @@ function getReturnData(error: boolean, data: any): ReturnData {
   return log;
 }
 
-export const expressionEvaluator = (expression: string): any => {
+export const expressionEvaluator = (expression: string,  map: Map<string, number>): ReturnData => {
 	
   try {
     const parser = new Parser(expression);
@@ -29,9 +29,8 @@ export const expressionEvaluator = (expression: string): any => {
     if (AST.errors.length)
       return getReturnData(true, AST.errors);
 
-    const evaluate = new Evaluate();
-    let variables = new Map<string, number>();
-    evaluate.evaluate(ast, variables);
+    const evaluate = new Evaluate(map);
+    evaluate.evaluate(ast);
 
     if (evaluate.errors.length)
       return getReturnData(true, evaluate.errors);
@@ -39,7 +38,6 @@ export const expressionEvaluator = (expression: string): any => {
     return getReturnData(false, evaluate.result);
   }
   catch (err) {
-    console.log('object')
     return getReturnData(true, [err.message])
   }  
 }

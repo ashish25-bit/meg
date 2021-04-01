@@ -4,12 +4,12 @@ import { NodeKind } from "./AST/NodeKind";
 import { UnaryOperatorKind } from "./AST/UnaryOperatorKind";
 
 export class Evaluate {
-    private _variables;
+    private _variables: Map<string, number | undefined>;
     private _result: number | boolean | null | undefined;
     private _errors: Array<string>;
 
-    constructor() {
-        this._variables = new Map<string, number | undefined>();
+    constructor(map: Map<string, number>) {
+        this._variables = map;
         this._errors = [];
         this._result = undefined;
     }
@@ -26,8 +26,7 @@ export class Evaluate {
         return this._variables;
     }
 
-    evaluate(exp: Expression, map: Map<string, number>): void {
-        this._variables = map;
+    evaluate(exp: Expression): void {
         this._result = this.evaluateExpression(exp);
     }
 

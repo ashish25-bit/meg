@@ -62,7 +62,7 @@
 
 .editorContainer .editor .editor-input {
   height: var(--editor-line-height);
-  background: var(--editor-current-line);
+  background: rgba(255, 255, 255, 0.0);
   color: #fff;
   padding: 0 10px;
   position: absolute;
@@ -80,7 +80,8 @@
   font-size: var(--editor-font-size);
 }
 .editorContainer .editor .editor-line.current-line {
-  opacity: 0;
+  background: var(--editor-current-line);
+  color: red;
 }
 
 .editorContainer .gutter {

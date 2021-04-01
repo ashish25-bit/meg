@@ -8,6 +8,8 @@ const Editor: React.FC = () => {
   const [lines, setLines] = useState(1);
   const [currentLine, setCurrentLine] = useState(1);
   const [lineData, setLineData] = useState(Array<string>());
+  const lineRef = useRef(Array<HTMLDivElement>());
+  lineRef.current = Array<HTMLDivElement>();
 
   const { setEditorData, run, editorData } = useContext(EditorContext);
 
@@ -38,43 +40,52 @@ const Editor: React.FC = () => {
     }
   }
 
-  return (
-      // document.documentElement.style.setProperty('--your-variable', '#YOURCOLOR');
-      <div className="editorContainer">
-        <Gutter lines={lines} />
+  function clickOnLine(lineIndex: number): void {
+    setEditorData(lineData[lineIndex]);
+    setCurrentLine(lineIndex+1)
+  }
 
-        <div className="editor">
-          <input
-            value={editorData}
-            className="editor-input"
-            ref={inputRef}
-            style={{ top: `${( lines - 1 ) * 26}px` }}
-            onKeyDown={e => captureKeyDown(e)}
-            onInput={e => setEditorData(inputRef.current?.value)}
-            spellCheck={false}
-            autoCapitalize="off"
-            autoCorrect="off"
-            autoComplete="off"
-            autoFocus={true}
-          />
-          {
-            new Array(lines).fill(0).map((_, i) => {
-              return (
-                <div 
-                  className = {
-                    i+1 === currentLine ? 
-                      'current-line editor-line' : 
-                      'editor-line'
-                  }
-                  key={i}
-                >
-                  {i + 1 === currentLine ? "" : lineData[i]}
-                </div>
-              )
-            })
-          }
-        </div>
+  function assignRef(el: HTMLDivElement) {
+    if (el) {
+      lineRef.current.push(el);
+    }
+  }
+
+  return (
+    // document.documentElement.style.setProperty('--your-variable', '#YOURCOLOR');
+    <div className="editorContainer">
+      <Gutter lines={lines} />
+
+      <div className="editor">
+        <input
+          value={editorData}
+          className="editor-input"
+          ref={inputRef}
+          style={{ top: `${(currentLine - 1) * 26}px` }}
+          onKeyDown={e => captureKeyDown(e)}
+          onInput={e => setEditorData(inputRef.current?.value)}
+          spellCheck={false}
+          autoCapitalize="off"
+          autoCorrect="off"
+          autoComplete="off"
+          autoFocus={true}
+        />
+        {
+          new Array(lines).fill(0).map((_, i) => (
+            <div
+              className={i + 1 === currentLine ?
+                'current-line editor-line' :
+                'editor-line'}
+              key={i}
+              onClick={() => clickOnLine(i)}
+              ref={assignRef}
+            >
+              {i + 1 === currentLine ? "" : lineData[i]}
+            </div>
+          ))
+        }
       </div>
+    </div>
   )
 }
 
