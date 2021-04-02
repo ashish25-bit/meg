@@ -1,6 +1,7 @@
 import React, { useContext, useRef, useState } from 'react';
 import { EditorContext } from '../utils/EditorContext';
 import Gutter from './Gutter';
+import { KeyboardEvent } from '../utils/KeyboardEvent';
 
 const Editor: React.FC = () => {
 
@@ -28,25 +29,27 @@ const Editor: React.FC = () => {
       return;
     }
 
-    if (e.key === 'Enter') {
+    // Enter
+    else if (e.key === KeyboardEvent.ENTER) {
       e.preventDefault();
       run();
 
       let newArray = [...lineData];
       newArray[currentLine - 1] = `${editorData} `;
-      
+
       if (lines === currentLine)
         newArray.push("");
       else
         newArray.splice(currentLine, 0, "")
-      
+
       setLineData(newArray);
       setLines(prevState => prevState + 1);
       setCurrentLine(prevState => prevState + 1);
       setEditorData("");
     }
 
-    if (e.code === 'Backspace' && editorData === '') {
+    // for removing line when backspace is clicked and input is empty
+    else if (e.code === KeyboardEvent.BACKSPACE && editorData === '') {
       let newArray = lineData.filter((_, index) =>
         currentLine !== index + 1
       )
@@ -59,12 +62,42 @@ const Editor: React.FC = () => {
       }
     }
 
-    if (e.code === 'Tab') {
+    // adding tab space when tab key is clicked
+    else if (e.code === KeyboardEvent.TAB) {
       e.preventDefault();
       const newEditorData = `${editorData}\t`;
       setEditorData(newEditorData);
     }
 
+    // going down when down key is clicked
+    else if (e.code === KeyboardEvent.UP) {
+      e.preventDefault();
+      if (lines > 1 && currentLine > 1) {
+        
+        if (editorData !== lineData[currentLine - 1]) {
+          let newArray = [...lineData];
+          newArray[currentLine - 1] = editorData;
+          setLineData(newArray);
+        }
+
+        setEditorData(lineData[currentLine - 2]);
+        setCurrentLine(prevState => prevState - 1);
+      }
+    }
+
+    // going down when down key is clicked
+    else if (e.code === KeyboardEvent.DOWN) {
+      e.preventDefault();
+      if (currentLine < lines) {
+        if (lineData[currentLine - 1] !== editorData) {
+          let newArray = [...lineData];
+          newArray[currentLine - 1] = editorData;
+          setLineData(newArray)
+        }
+        setEditorData(lineData[currentLine]);
+        setCurrentLine(prevState => prevState + 1); 
+      }
+    }
   }
 
   function onBlurEventCapture() {
@@ -75,18 +108,18 @@ const Editor: React.FC = () => {
 
   function clickOnLine(lineIndex: number): void {
     setEditorData(
-      lineData[lineIndex] === undefined ? 
-        "" : 
+      lineData[lineIndex] === undefined ?
+        "" :
         lineData[lineIndex]
     );
-    setCurrentLine(lineIndex+1);
+    setCurrentLine(lineIndex + 1);
     inputRef.current?.focus();
   }
 
   return (
     // document.documentElement.style.setProperty('--your-variable', '#YOURCOLOR');
     <div className="editorContainer">
-      <Gutter lines={lines} />
+      <Gutter lines={lines} currentLine={currentLine} />
 
       <div className="editor">
         <input

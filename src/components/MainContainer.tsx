@@ -19,7 +19,6 @@ const MainContainer: React.FC = () =>  {
     
     const data: any = expressionEvaluator(editorData.trim(), variables.current);
     setOutputData(data);
-    console.log(variables.current)
   }
 
   return (
