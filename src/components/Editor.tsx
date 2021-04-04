@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useRef } from 'react';
 import { EditorContext } from '../utils/EditorContext';
 import Gutter from './Gutter';
 import { KeyboardEvent } from '../utils/KeyboardEvent';
@@ -6,23 +6,30 @@ import { KeyboardEvent } from '../utils/KeyboardEvent';
 const Editor: React.FC = () => {
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const [lines, setLines] = useState(1);
-  const [currentLine, setCurrentLine] = useState(1);
-  const [lineData, setLineData] = useState([""]);
 
-  const { setEditorData, run, editorData } = useContext(EditorContext);
+  const {
+    lines, setLines,
+    currentLine, setCurrentLine,
+    lineData, setLineData,
+    run
+  } = useContext(EditorContext);
+
+  function setInputVal(str: string) {
+    if (inputRef.current)
+      inputRef.current.value = str;
+  }
 
   function captureKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
 
     // run command
-    // if (e.key === 'Enter' && e.altKey) {
-    //   run();
-    //   return;
-    // }
+    if (e.key === 'Enter' && e.altKey) {
+      run();
+      return;
+    }
 
     // reset command
     if ((e.key === 'x' || e.key === 'X') && e.altKey) {
-      setEditorData("");
+      setInputVal(" ");
       setLineData([]);
       setLines(1);
       setCurrentLine(1);
@@ -32,10 +39,11 @@ const Editor: React.FC = () => {
     // Enter
     else if (e.key === KeyboardEvent.ENTER) {
       e.preventDefault();
-      run();
+
+      // console.log('Caret at: ', inputRef.current?.selectionStart)
 
       let newArray = [...lineData];
-      newArray[currentLine - 1] = `${editorData} `;
+      newArray[currentLine - 1] = `${inputRef.current?.value} `;
 
       if (lines === currentLine)
         newArray.push("");
@@ -43,45 +51,45 @@ const Editor: React.FC = () => {
         newArray.splice(currentLine, 0, "")
 
       setLineData(newArray);
-      setLines(prevState => prevState + 1);
-      setCurrentLine(prevState => prevState + 1);
-      setEditorData("");
+      setLines((prevState: number) => prevState + 1);
+      setCurrentLine((prevState: number) => prevState + 1);
+      setInputVal("");
     }
 
     // for removing line when backspace is clicked and input is empty
-    else if (e.code === KeyboardEvent.BACKSPACE && editorData === '') {
-      let newArray = lineData.filter((_, index) =>
+    else if (e.code === KeyboardEvent.BACKSPACE && inputRef.current?.value === '') {
+      let newArray = lineData.filter((_: any, index: number) =>
         currentLine !== index + 1
       )
       setLineData(newArray);
 
       if (currentLine !== 1) {
-        setLines(prevData => prevData - 1);
-        setCurrentLine(prevData => prevData - 1);
-        setEditorData(newArray[currentLine - 2]);
+        setLines((prevData: number) => prevData - 1);
+        setCurrentLine((prevData: number) => prevData - 1);
+        setInputVal(newArray[currentLine - 2]);
       }
     }
 
     // adding tab space when tab key is clicked
     else if (e.code === KeyboardEvent.TAB) {
       e.preventDefault();
-      const newEditorData = `${editorData}\t`;
-      setEditorData(newEditorData);
+      const newEditorData = `${inputRef.current?.value}\t`;
+      setInputVal(newEditorData);
     }
 
-    // going down when down key is clicked
+    // going down when up key is clicked
     else if (e.code === KeyboardEvent.UP) {
       e.preventDefault();
       if (lines > 1 && currentLine > 1) {
-        
-        if (editorData !== lineData[currentLine - 1]) {
+
+        if (inputRef.current?.value !== lineData[currentLine - 1]) {
           let newArray = [...lineData];
-          newArray[currentLine - 1] = editorData;
+          newArray[currentLine - 1] = inputRef.current?.value;
           setLineData(newArray);
         }
 
-        setEditorData(lineData[currentLine - 2]);
-        setCurrentLine(prevState => prevState - 1);
+        setInputVal(lineData[currentLine - 2]);
+        setCurrentLine((prevState: number) => prevState - 1);
       }
     }
 
@@ -89,29 +97,25 @@ const Editor: React.FC = () => {
     else if (e.code === KeyboardEvent.DOWN) {
       e.preventDefault();
       if (currentLine < lines) {
-        if (lineData[currentLine - 1] !== editorData) {
+        if (lineData[currentLine - 1] !== inputRef.current?.value) {
           let newArray = [...lineData];
-          newArray[currentLine - 1] = editorData;
+          newArray[currentLine - 1] = inputRef.current?.value;
           setLineData(newArray)
         }
-        setEditorData(lineData[currentLine]);
-        setCurrentLine(prevState => prevState + 1); 
+        setInputVal(lineData[currentLine]);
+        setCurrentLine((prevState: number) => prevState + 1);
       }
     }
   }
 
   function onBlurEventCapture() {
     let newArray = [...lineData];
-    newArray[currentLine - 1] = `${editorData} `;
+    newArray[currentLine - 1] = `${inputRef.current?.value} `;
     setLineData(newArray);
   }
 
   function clickOnLine(lineIndex: number): void {
-    setEditorData(
-      lineData[lineIndex] === undefined ?
-        "" :
-        lineData[lineIndex]
-    );
+    setInputVal(lineData[lineIndex]);
     setCurrentLine(lineIndex + 1);
     inputRef.current?.focus();
   }
@@ -123,12 +127,10 @@ const Editor: React.FC = () => {
 
       <div className="editor">
         <input
-          value={editorData}
           className="editor-input"
           ref={inputRef}
           style={{ top: `${(currentLine - 1) * 26}px` }}
           onKeyDown={e => captureKeyDown(e)}
-          onInput={e => setEditorData(inputRef.current?.value)}
           spellCheck={false}
           autoCapitalize="off"
           autoCorrect="off"
@@ -150,7 +152,7 @@ const Editor: React.FC = () => {
           ))
         }
       </div>
-      {/* <button onClick={() => console.log(lineData)}>Click</button> */}
+      {/* <button onClick={()/> => console.log(lineData)}>Click</button> */}
     </div>
   )
 }

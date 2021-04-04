@@ -5,39 +5,40 @@ import { Expression } from './CodeAnalysis/AST/Expression';
 import { Evaluate } from './CodeAnalysis/Evaluate';
 import { ReturnData } from '../utils/ReturnData';
 
-function getReturnData(error: boolean, data: any): ReturnData {
+function getReturnData(error: boolean, data: any, lineNumber: number = -1): ReturnData {
   const log: ReturnData = {
     error,
-    data
+    data,
+    lineNumber
   }
   return log;
 }
 
-export const expressionEvaluator = (expression: string,  map: Map<string, number>): ReturnData => {
+export const expressionEvaluator = (expression: string,  map: Map<string, number>, lineNumber: number): ReturnData => {
 	
   try {
     const parser = new Parser(expression);
     const exp:ExpressionSyntax = parser.parser();
 
     if (parser.errors.length) 
-      return getReturnData(true, parser.errors);
+      return getReturnData(true, parser.errors, lineNumber);
       
 
     const AST = new Binder();
     const ast: Expression = AST.bind(exp);
 
     if (AST.errors.length)
-      return getReturnData(true, AST.errors);
+      return getReturnData(true, AST.errors, lineNumber);
 
     const evaluate = new Evaluate(map);
     evaluate.evaluate(ast);
 
     if (evaluate.errors.length)
-      return getReturnData(true, evaluate.errors);
+      return getReturnData(true, evaluate.errors, lineNumber);
     
     return getReturnData(false, evaluate.result);
   }
   catch (err) {
-    return getReturnData(true, [err.message])
+    return getReturnData(true, [err.message], lineNumber);
   }  
 }

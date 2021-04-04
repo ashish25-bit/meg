@@ -3,168 +3,160 @@ import { SyntaxToken } from './SyntaxToken';
 import { TokenKind } from './TokenKind';
 
 export class Lexer {
-    private expression: string;
-    private position: number;
-    private _errors: Array<string>;
+  private expression: string;
+  private position: number;
+  private _errors: Array<string>;
 
-    constructor(expression: string) {
-        this.expression = expression;
-        this.position = -1;
-        this._errors = [];
-    }
+  constructor(expression: string) {
+    this.expression = expression;
+    this.position = -1;
+    this._errors = [];
+  }
 
-    private next = (): void => { this.position++; };
-    private initializePos = (): void => { this.position = -1; };
+  private next = (): void => { this.position++; };
 
-    get errors(): Array<string> {
-        return this._errors;
-    }
+  get errors(): Array<string> {
+    return this._errors;
+  }
 
-    getChar(): string {
-        if (this.position === this.expression.length)
-            return '\0';
-        return this.expression[this.position];
-    }
+  private getChar(): string {
+    if (this.position === this.expression.length)
+      return '\0';
+    return this.expression[this.position];
+  }
 
-    // checks whether the char is a digit or not
-    isDigit(): boolean {
-        const char: string = this.getChar();
-        return !isNaN(parseFloat(char)) || char === '.';
-    }
+  // checks whether the char is a digit or not
+  private isDigit(): boolean {
+    const char: string = this.getChar();
+    return !isNaN(parseFloat(char)) || char === '.';
+  }
 
-    isAlpha(): boolean {
-        const char: string = this.getChar();
-        return (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z');
-    }
+  private isAlpha(): boolean {
+    const char: string = this.getChar();
+    return (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z');
+  }
 
-    nextToken(): SyntaxToken {
+  nextToken(): SyntaxToken {
+    this.next();
+    let ch: string = this.getChar();
+
+    switch (ch) {
+      // end of file or end of line token
+      case '\0':
+        return new SyntaxToken('EOF', TokenKind.EndOfFileToken, null);
+
+      // whitespace
+      case ' ':
+      case '\t':
+        let whiteSpaceStr = "";
+        while (this.getChar() === ' ' || this.getChar() === '\t') {
+          whiteSpaceStr = whiteSpaceStr + ' ';
+          this.next();
+        }
+        this.position--;
+        return new SyntaxToken(whiteSpaceStr, TokenKind.WhiteSpaceToken, null);
+
+      // number
+      case '1': case '2': case '3': case '4': case '5':
+      case '6': case '7': case '8': case '9': case '0':
+        let num: string = "";
+        while (this.isDigit()) {
+          num += this.getChar();
+          this.next();
+        }
+
+        const isNumber: boolean = !isNaN(parseFloat(num));
+
+        this.position--;
+
+        return new SyntaxToken(
+          num,
+          isNumber ? TokenKind.NumberToken : TokenKind.BadToken,
+          isNumber ? parseFloat(num) : null
+        );
+
+      // AND operator
+      case '&':
         this.next();
-        let ch: string = this.getChar();
+        if (this.getChar() === '&')
+          return new SyntaxToken('&&', TokenKind.BinaryAndOperator, null);
+        // // can add the bitwise &
+        // else 
+        //     return new SyntaxToken('&', TokenKind.BitwiseAndOperator, null);
+        break;
 
-        // end of file
-        if (ch === '\0')
-            return new SyntaxToken('EOF', TokenKind.EndOfFileToken, null);
+      // OR operator
+      case '|':
+        this.next();
+        if (this.getChar() === '|')
+          return new SyntaxToken('||', TokenKind.BinaryOrOperator, null);
+        // // can add the bitwise |
+        // else 
+        //     return new SyntaxToken('&&', TokenKind.BitwiseOrOperator, null);
+        break;
 
-        // is a whiteSpace
-        if (ch === ' ' || ch === '\t') {
-            let str = "";
-            while (this.getChar() === ' ' || this.getChar() === '\t') {
-                str = str + ' ';
-                this.next();
-            }
-            this.position--;
-            return new SyntaxToken(str, TokenKind.WhiteSpaceToken, null);
+      // assignment or equality operator
+      case '=':
+        this.next();
+        if (this.getChar() === '=')
+          return new SyntaxToken('==', TokenKind.EqualityOperator, null)
+
+        this.position--;
+        return new SyntaxToken('=', TokenKind.AssignmentOperatorToken, null);
+
+      // NOT operator or Not equal operator
+      case '!':
+        this.next();
+        if (this.getChar() === '=')
+          return new SyntaxToken('!=', TokenKind.NotEqualOperator, null);
+
+        this.position--;
+        return new SyntaxToken('!', TokenKind.UnaryNotOperator, null);
+
+      case '%':
+        return new SyntaxToken('%', TokenKind.ModulusToken, null);
+
+      case '+':
+        return new SyntaxToken('+', TokenKind.PlusToken, null);
+
+      case '-':
+        return new SyntaxToken('-', TokenKind.MinusToken, null);
+
+      case '*':
+        return new SyntaxToken('*', TokenKind.MultiplyToken, null);
+
+      case '/':
+        return new SyntaxToken('/', TokenKind.DivideToken, null);
+
+      case '(':
+        return new SyntaxToken('(', TokenKind.OpenBracketToken, null);
+
+      case ')':
+        return new SyntaxToken(')', TokenKind.CloseBracketToken, null);
+
+      default:
+        let str: string = "";
+        while (this.isAlpha()) {
+          str += this.getChar();
+          this.next();
         }
 
-        // ch is a digit
-        if (this.isDigit()) {
-            let num: string = "";
-            while (this.isDigit()) {
-                num += this.getChar();
-                this.next();
-            }
+        if (this.getChar() !== '\0' && this.getChar() !== ' ' && this.getChar() !== '\t')
+          this.position--;
 
-            const isNumber: boolean = !isNaN(parseFloat(num));
+        const kind: TokenKind = getKeywordKind(str);
+        
+        if (kind === TokenKind.BooleanTrueToken)
+          return new SyntaxToken(str, kind, true);
 
-            this.position--;
+        if (kind === TokenKind.BooleanFalseToken)
+          return new SyntaxToken(str, kind, false);
 
-            return new SyntaxToken(
-                num,
-                isNumber ? TokenKind.NumberToken : TokenKind.BadToken,
-                isNumber ? parseFloat(num) : null
-            );
-        }
+        return new SyntaxToken(str, kind, null);
 
-        if (this.isAlpha()) {
-            let str: string = "";
-            while (this.isAlpha()) {
-                str += this.getChar();
-                this.next();
-            }
-
-            if (this.getChar() !== '\0' && this.getChar() !== ' ')
-                this.position--;
-
-            const kind: TokenKind = getKeywordKind(str);
-            if (kind === TokenKind.IdentifierToken)
-                return new SyntaxToken(str, kind, null);
-
-            if (kind === TokenKind.BooleanTrueToken)
-                return new SyntaxToken(str, kind, true);
-
-            if (kind === TokenKind.BooleanFalseToken)
-                return new SyntaxToken(str, kind, false);
-        }
-
-        // binary and operator
-        if (ch === '&') {
-            this.next();
-            if (this.getChar() === '&')
-                return new SyntaxToken('&&', TokenKind.BinaryAndOperator, null);
-            // // can add the bitwise &
-            // else 
-            //     return new SyntaxToken('&&', TokenKind.BitwiseAndOperator, null);
-        }
-
-        // binary or operator
-        if (ch === '|') {
-            this.next();
-            if (this.getChar() === '|')
-                return new SyntaxToken('||', TokenKind.BinaryOrOperator, null);
-            // // can add the bitwise |
-            // else 
-            //     return new SyntaxToken('&&', TokenKind.BitwiseOrOperator, null);
-        }
-
-        // equals operator
-        if (ch === '=') {
-            this.next();
-            if (this.getChar() === '=')
-                return new SyntaxToken('==', TokenKind.EqualityOperator, null)
-
-            this.position--;
-            return new SyntaxToken('=', TokenKind.AssignmentOperatorToken, null); 
-        }
-
-        if (ch === '!') {
-            this.next();
-            if (this.getChar() === '=')
-                return new SyntaxToken('!=', TokenKind.NotEqualOperator, null);
-            
-            this.position--;
-            return new SyntaxToken('!', TokenKind.UnaryNotOperator, null);
-        }
-
-        if (ch === '%')
-            return new SyntaxToken('%', TokenKind.ModulusToken, null);
-
-        if (ch === '+')
-            return new SyntaxToken('+', TokenKind.PlusToken, null);
-
-        if (ch === '-')
-            return new SyntaxToken('-', TokenKind.MinusToken, null);
-
-        if (ch === '*')
-            return new SyntaxToken('*', TokenKind.MultiplyToken, null);
-
-        if (ch === '/')
-            return new SyntaxToken('/', TokenKind.DivideToken, null);
-
-        if (ch === '(')
-            return new SyntaxToken('(', TokenKind.OpenBracketToken, null);
-
-        if (ch === ')')
-            return new SyntaxToken(')', TokenKind.CloseBracketToken, null);
-
-        this._errors.push(`Bad token: ${ch}`);
-        return new SyntaxToken(ch, TokenKind.BadToken, null);
     }
 
-    lexerMethod(): void {
-        while (this.position < this.expression.length) {
-            const token: SyntaxToken = this.nextToken();
-            console.log(`${token.token}: ${TokenKind[token.kind]} ${token.value}`);
-        }
-        this.initializePos();
-    }
+    this._errors.push(`Bad token: ${ch}`);
+    return new SyntaxToken(ch, TokenKind.BadToken, null);
+  }
 }

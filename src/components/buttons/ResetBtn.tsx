@@ -6,10 +6,9 @@ import { ButtonProp } from '../../utils/ButtonProp';
 
 const ResetBtn = ({ width }: ButtonProp) => {
 
-  const { setEditorData, setOutputData } = useContext(EditorContext);
+  const { setOutputData } = useContext(EditorContext);
   
   const clickHandler = (): void => {
-    setEditorData('');
     setOutputData(null);
   }
 

@@ -30,7 +30,7 @@ export class Evaluate {
     this._result = this.evaluateExpression(exp);
   }
 
-  evaluateExpression(exp: Expression): number {
+  private evaluateExpression(exp: Expression): number {
 
     switch (exp.kind) {
 
@@ -87,7 +87,7 @@ export class Evaluate {
     }
   }
 
-  resultant(left: number, operator: BinaryOperatorKind, right: number): number {
+  private resultant(left: number, operator: BinaryOperatorKind, right: number): number {
     switch (operator) {
       
       case BinaryOperatorKind.Addition:
@@ -120,7 +120,7 @@ export class Evaluate {
     }
   }
 
-  changeOperation(number: number, kind: UnaryOperatorKind): number {
+  private changeOperation(number: number, kind: UnaryOperatorKind): number {
 
     switch (kind) {
       case UnaryOperatorKind.Negation:
@@ -135,7 +135,7 @@ export class Evaluate {
     }
   }
 
-  getLiteralValue(exp: Expression): number {
+  private getLiteralValue(exp: Expression): number {
     if (exp.type === "number") return exp.value;
 
     if (exp.value === true) return 1;

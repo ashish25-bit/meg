@@ -1,34 +1,31 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import ButtonContainer from './ButtonContainer';
 import Editor from './Editor';
 import Output from './Output';
 import { EditorContext } from '../utils/EditorContext';
-import { expressionEvaluator } from '../compiler/ExpressionEvaluator';
+import { mainEvaluator } from '../compiler/MainEvaluator';
 
 const MainContainer: React.FC = () =>  {
 
-  const [editorData, setEditorData] = useState("");
+  const [lines, setLines] = useState(1);
+  const [currentLine, setCurrentLine] = useState(1);
+  const [lineData, setLineData] = useState(Array<string>());
   const [outputData, setOutputData] = useState(null);
-  const variables = useRef(new Map<string, number>());
 
   const run = () => {
-    // if (!editorData.trim().length) {
-    //   alert('No input data present');
-    //   return
-    // }
-    
-    const data: any = expressionEvaluator(editorData.trim(), variables.current);
+    const data: any = mainEvaluator(lineData);
+    console.log(data)
     setOutputData(data);
   }
 
   return (
     <EditorContext.Provider
       value={{
-        setEditorData, 
-        editorData,
-        outputData,
+        outputData, setOutputData,
         run,
-        setOutputData
+        lines, setLines,
+        currentLine, setCurrentLine,
+        lineData, setLineData
       }}
     >
       <div className="mainContainer">

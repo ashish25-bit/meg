@@ -44,17 +44,17 @@ export class Parser {
     this._errors = [...lexer.errors];
   }
 
-  nextToken(): SyntaxToken {
+  private nextToken(): SyntaxToken {
     const current = this.getCurrent();
     this.position++;
     return current;
   }
 
-  getCurrent(): SyntaxToken {
+  private getCurrent(): SyntaxToken {
     return this.tokens[this.position];
   }
 
-  lookAhead(pos: number): SyntaxToken | null {
+  private lookAhead(pos: number): SyntaxToken | null {
     if (this.position + pos <= this.tokens.length) {
       return this.tokens[this.position + pos];
     }
@@ -68,11 +68,11 @@ export class Parser {
     return expression;
   }
 
-  parseExpression(): ExpressionSyntax {
+  private parseExpression(): ExpressionSyntax {
     return this.parseAssignmentExpression();
   }
 
-  parseAssignmentExpression(): ExpressionSyntax {
+  private parseAssignmentExpression(): ExpressionSyntax {
     let pos1 = this.lookAhead(0);
     let pos2 = this.lookAhead(1);
 
@@ -87,7 +87,7 @@ export class Parser {
     return this.parseBinaryExpression();
   }
 
-  parseBinaryExpression(precedence: number = 0): ExpressionSyntax {
+  private parseBinaryExpression(precedence: number = 0): ExpressionSyntax {
     let left: ExpressionSyntax;
 
     let unaryPrecedence = unaryOperatorPrecedence(this.getCurrent().kind);
@@ -119,35 +119,38 @@ export class Parser {
     return left;
   }
 
-  matchKind(kind: TokenKind): boolean {
+  private matchKind(kind: TokenKind): boolean {
     if (this.getCurrent().kind === kind)
       return true;
     // report error
-    this._errors.push(`ERROR: Unexpected token ${TokenKind[this.getCurrent().kind]}, expected ${TokenKind[kind]}`);
+    this._errors.push(`Unexpected token ${TokenKind[this.getCurrent().kind]}, expected ${TokenKind[kind]}`);
     return false;
   }
 
-  parsePrimaryExpression(): ExpressionSyntax {
-    if (this.getCurrent().kind === TokenKind.OpenBracketToken) {
-      let left = this.nextToken();
-      let expression = this.parseExpression();
-      if (this.matchKind(TokenKind.CloseBracketToken))
-        return new ParenthesizeExpressionSyntax(left, expression, this.nextToken());
+  private parsePrimaryExpression(): ExpressionSyntax {
+
+    switch (this.getCurrent().kind) {
+      case TokenKind.OpenBracketToken:
+        let left = this.nextToken();
+        let expression = this.parseExpression();
+        if (this.matchKind(TokenKind.CloseBracketToken))
+          return new ParenthesizeExpressionSyntax(left, expression, this.nextToken());
+        break;
+
+      case TokenKind.BooleanFalseToken:
+      case TokenKind.BooleanTrueToken:
+        const kind = this.getCurrent().value === true ? TokenKind.BooleanTrueToken : TokenKind.BooleanFalseToken;
+        return new LiteralExpressionSyntax(this.nextToken().value, kind);
+
+      case TokenKind.IdentifierToken:
+        return new VariableExpressionSyntax(this.nextToken().token);
+
+      default:
+        if (this.matchKind(TokenKind.NumberToken))
+          return new LiteralExpressionSyntax(this.nextToken().value, TokenKind.NumberToken);
+        break;
     }
 
-    else if (
-      this.getCurrent().kind === TokenKind.BooleanTrueToken ||
-      this.getCurrent().kind === TokenKind.BooleanFalseToken
-    ) {
-      const kind = this.getCurrent().value === true ? TokenKind.BooleanTrueToken : TokenKind.BooleanFalseToken;
-      return new LiteralExpressionSyntax(this.nextToken().value, kind);
-    }
-
-    else if (this.getCurrent().kind === TokenKind.IdentifierToken)
-      return new VariableExpressionSyntax(this.nextToken().token);
-
-    if (this.matchKind(TokenKind.NumberToken))
-      return new LiteralExpressionSyntax(this.nextToken().value, TokenKind.NumberToken);
     return new SyntaxToken(this.getCurrent().token, TokenKind.BadToken, null);
   }
 }
