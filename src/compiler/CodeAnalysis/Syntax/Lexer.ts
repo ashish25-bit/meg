@@ -135,6 +135,10 @@ export class Lexer {
         return new SyntaxToken(')', TokenKind.CloseBracketToken, null);
 
       default:
+
+        if (!this.isAlpha())
+          break;
+
         let str: string = "";
         while (this.isAlpha()) {
           str += this.getChar();
