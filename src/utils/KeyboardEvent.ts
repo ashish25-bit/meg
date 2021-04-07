@@ -3,5 +3,7 @@ export enum KeyboardEvent {
   BACKSPACE = "Backspace",
   TAB = 'Tab',
   DOWN = 'ArrowDown',
-  UP = 'ArrowUp'
+  UP = 'ArrowUp',
+  DELETE = 'Delete',
+  NUMPAD_DELETE = 'NumpadDecimal,'
 }

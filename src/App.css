@@ -16,7 +16,7 @@
 }
 
 .wrapperContainer {
-  height: calc( 100vh - 150px );
+  height: calc( 26 * 23px);
   margin-top: 10px;
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -25,11 +25,11 @@
 @media only screen and (max-width: 769px) {
   .wrapperContainer {
     display: block;
-    min-height: 150vh;
+    /* min-height: 150vh; */
   }
   .editorContainer,
   .outputContainer {
-    height: 45%;
+    height: calc( 26 * 17px);
   }
 
   .editorContainer {
@@ -47,7 +47,7 @@
   background-color: var(--editor-color);
   position: relative;
   font-size: var(--editor-font-size);
-  overflow-y: hidden;
+  overflow-y: auto;
   display: grid;
   grid-template-columns: var(--gutter-width) calc(100% - var(--gutter-width));
 }
