@@ -1,7 +1,7 @@
 import React, { useContext, useRef } from 'react';
 import { EditorContext } from '../utils/EditorContext';
 import Gutter from './Gutter';
-import { KeyboardEvent } from '../utils/KeyboardEvent';
+import { KeyboardEventKeys } from '../utils/KeyboardEvent';
 
 const Editor: React.FC = () => {
 
@@ -23,7 +23,7 @@ const Editor: React.FC = () => {
   function captureKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
 
     // run command
-    if (e.key === KeyboardEvent.ENTER && e.altKey) {
+    if (e.key === KeyboardEventKeys.ENTER && e.altKey) {
       run();
       return;
     }
@@ -38,7 +38,7 @@ const Editor: React.FC = () => {
     }
 
     // Enter
-    else if (e.key === KeyboardEvent.ENTER) {
+    else if (e.key === KeyboardEventKeys.ENTER) {
       e.preventDefault();
 
       if (currentLine >= 23)
@@ -67,33 +67,46 @@ const Editor: React.FC = () => {
       setLines((prevState: number) => prevState + 1);
       setCurrentLine((prevState: number) => prevState + 1);
       setInputVal(newEditorData);
+
+      const event = new KeyboardEvent('keypress', {
+        key: 'a',
+      });
+
+      setTimeout(
+        () => {
+          inputRef.current?.setSelectionRange(0, 100);
+          inputRef.current?.dispatchEvent(event);
+        }
+        , 10
+      );
     }
 
-    // for removing line when backspace is clicked and input is empty
-    else if (e.key === KeyboardEvent.BACKSPACE && inputRef.current?.value === '') {
+    // for removing line when backspace and the cursor is at the end
+    else if (e.key === KeyboardEventKeys.BACKSPACE && inputRef.current?.selectionStart === 0) {
       if (currentLine === 1) return;
-
-      let newArray = lineData.filter((_: any, index: number) =>
-        currentLine !== index + 1
-      )
+      
+      let currLineData = inputRef.current?.value + " ";
+      let prevLineData = lineData[currentLine - 2];
+      let newArray = [...lineData];
+      newArray[currentLine - 2] = prevLineData + currLineData;
+      newArray = newArray.filter((_: any, index: number) => currentLine !== index + 1)
+        
       setLineData(newArray);
 
-      if (currentLine !== 1) {
-        setLines((prevData: number) => prevData - 1);
-        setCurrentLine((prevData: number) => prevData - 1);
-        setInputVal(newArray[currentLine - 2]);
-      }
+      setLines((prevData: number) => prevData - 1);
+      setCurrentLine((prevData: number) => prevData - 1);
+      setInputVal(prevLineData + currLineData);
     }
 
     // adding tab space when tab key is clicked
-    else if (e.key === KeyboardEvent.TAB) {
+    else if (e.key === KeyboardEventKeys.TAB) {
       e.preventDefault();
       const newEditorData = `${inputRef.current?.value}\t`;
       setInputVal(newEditorData);
     }
 
     // going up when up key is clicked
-    else if (e.key === KeyboardEvent.UP) {
+    else if (e.key === KeyboardEventKeys.UP) {
       e.preventDefault();
       if (lines > 1 && currentLine > 1) {
 
@@ -109,7 +122,7 @@ const Editor: React.FC = () => {
     }
 
     // going down when down key is clicked
-    else if (e.key === KeyboardEvent.DOWN) {
+    else if (e.key === KeyboardEventKeys.DOWN) {
       e.preventDefault();
       if (currentLine < lines) {
         if (lineData[currentLine - 1] !== inputRef.current?.value) {
@@ -167,7 +180,7 @@ const Editor: React.FC = () => {
           ))
         }
       </div>
-      {/* <button onClick={()/> => console.log(lineData)}>Click</button> */}
+      {/* <button onClick={() => console.log(lineData)}>Click</button> */}
     </div>
   )
 }

@@ -62,6 +62,7 @@
   height: calc(100% - 10px);
   color: #fff;
   position: relative;
+  font-family: Consolas-regular;
 }
 
 .editorContainer .editor .editor-input {
@@ -74,14 +75,18 @@
   width: calc(100% - 20px);
   z-index: 100000;
   font-size: var(--editor-font-size);
+  font-family: var(--editor-font-family);
+  letter-spacing: var(--editor-letter-spacing);
 }
 
 .editorContainer .editor .editor-line {
   height: var(--editor-line-height);
   padding: 0 10px;
   display: grid;
+  letter-spacing: var(--editor-letter-spacing);
   align-items: center;
   font-size: var(--editor-font-size);
+  font-family: var(--editor-font-family);
 }
 .editorContainer .editor .editor-line.current-line {
   opacity: 0;

@@ -9,6 +9,8 @@
   --editor-gutter-space: 15px;
   --editor-line-height: 26px;
   --editor-current-line: #fffefe1f;
+  --editor-font-family: Rubik-Light;
+  --editor-letter-spacing: 2px;
   
   --scrollbar-background: #2e2e30;
   --scrollbar-track-background: #4b4b4d;
@@ -25,8 +27,8 @@
 }
 
 @font-face {
-  font-family: Montserrat-Bold;
-  src: url('./fonts/Montserrat-Bold.ttf');
+  font-family: Rubik-Light;
+  src: url('./fonts/Rubik-Light.ttf');
 }
 
 * {
@@ -34,7 +36,7 @@
   padding: 0;
 }
 
-body, input, ::placeholder, textarea, button, pre {
+body, input, ::placeholder, textarea, button {
   font-family: Montserrat-Light;
 }
 

@@ -1,4 +1,4 @@
-export enum KeyboardEvent {
+export enum KeyboardEventKeys {
   ENTER = "Enter",
   BACKSPACE = "Backspace",
   TAB = 'Tab',

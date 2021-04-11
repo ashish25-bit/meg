@@ -9,7 +9,7 @@ const MainContainer: React.FC = () =>  {
 
   const [lines, setLines] = useState(1);
   const [currentLine, setCurrentLine] = useState(1);
-  const [lineData, setLineData] = useState(Array<string>());
+  const [lineData, setLineData] = useState(Array<string>(""));
   const [outputData, setOutputData] = useState(null);
 
   const run = () => {
