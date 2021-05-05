@@ -3,7 +3,7 @@ import ButtonContainer from './ButtonContainer';
 import Editor from './Editor';
 import Output from './Output';
 import { EditorContext } from '../utils/EditorContext';
-import { mainEvaluator } from '../compiler/MainEvaluator';
+import { mainEvaluator } from '../compiler/Main';
 
 const MainContainer: React.FC = () =>  {
 
@@ -14,7 +14,6 @@ const MainContainer: React.FC = () =>  {
 
   const run = () => {
     const data: any = mainEvaluator(lineData);
-    console.log(data)
     setOutputData(data);
   }
 

@@ -21,11 +21,11 @@ export class Binder {
         return this._errors;
     }
 
-    bind(syntax: ExpressionSyntax): Expression {
+    bind(syntax: ExpressionSyntax, variables: Map<string, any>): Expression {
 
         switch(syntax.kind) {
             case TokenKind.ParenthesizedExpression:
-                return this.bind(syntax.expression)
+                return this.bind(syntax.expression, variables)
 
             case TokenKind.NumberToken:
             case TokenKind.BooleanFalseToken:
@@ -33,23 +33,25 @@ export class Binder {
                 return this.bindLiteralExpression(syntax);
 
             case TokenKind.UnaryExpressionToken:
-                return this.bindUnaryExpression(syntax);
+                return this.bindUnaryExpression(syntax, variables);
                 
             case TokenKind.BinaryExpressionToken:
-                return this.bindBinaryExpression(syntax);
+                return this.bindBinaryExpression(syntax, variables);
 
             case TokenKind.VariableExpression:
-                return this.bindVariableExpression(syntax);
+                return this.bindVariableExpression(syntax, variables);
 
             case TokenKind.InitializationExpression:
-                return this.bindInitializationExpression(syntax);
+                return this.bindInitializationExpression(syntax, variables);
 
             default:
                 throw new Error(`Unexpected syntax kind: '${TokenKind[syntax.kind]}'`);
         }
     }
 
-    bindVariableExpression(syntax: ExpressionSyntax): Expression {
+    bindVariableExpression(syntax: ExpressionSyntax, variables: Map<string, any>): Expression {
+        if (!variables.has(syntax.token))
+            variables.set(syntax.token, undefined);
         return new VariableExpression(syntax.token);
     }
 
@@ -58,24 +60,24 @@ export class Binder {
         return new LiteralExpression(value);
     }
 
-    bindUnaryExpression(syntax: ExpressionSyntax): Expression {
-        let operand: Expression = this.bind(syntax.operand);
+    bindUnaryExpression(syntax: ExpressionSyntax, variables: Map<string, any>): Expression {
+        let operand: Expression = this.bind(syntax.operand, variables);
         let operator: UnaryOperatorKind | null = this.bindUnaryOperatorKind(syntax.operator.kind, operand);
 
         return new UnaryExpression(operand, {kind: operator, value: syntax.operator.token});
     }
 
-    bindBinaryExpression(syntax: ExpressionSyntax): Expression {
-        let left: Expression = this.bind(syntax.left);
-        let right: Expression = this.bind(syntax.right);
+    bindBinaryExpression(syntax: ExpressionSyntax, variables: Map<string, any>): Expression {
+        let left: Expression = this.bind(syntax.left, variables);
+        let right: Expression = this.bind(syntax.right, variables);
         let operator: BinaryOperatorKind | null = this.bindBinaryOperatorKind(syntax.operator.kind);
 
         return new BinaryExpression(left, {kind: operator, value: syntax.operator.token}, right);
     }
 
-    bindInitializationExpression(syntax: ExpressionSyntax): Expression {
-        let left: Expression = this.bind(syntax.left);
-        let right: Expression = this.bind(syntax.right);
+    bindInitializationExpression(syntax: ExpressionSyntax, variables: Map<string, any>): Expression {
+        let left: Expression = this.bind(syntax.left, variables);
+        let right: Expression = this.bind(syntax.right, variables);
         let operator: BinaryOperatorKind | null = this.bindBinaryOperatorKind(syntax.operator.kind);
 
         return new InitializationExpression(left, { kind: operator, value: '=' }, right); 

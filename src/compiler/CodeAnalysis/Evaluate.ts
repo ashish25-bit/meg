@@ -4,12 +4,12 @@ import { NodeKind } from "./AST/NodeKind";
 import { UnaryOperatorKind } from "./AST/UnaryOperatorKind";
 
 export class Evaluate {
-  private _variables: Map<string, number | undefined>;
-  private _result: number | boolean | null | undefined;
+  private _variables: Map<string, number>;
+  private _result: any;
   private _errors: Array<string>;
 
-  constructor(map: Map<string, number>) {
-    this._variables = map;
+  constructor(variables: Map<string, number>) {
+    this._variables = variables;
     this._errors = [];
     this._result = undefined;
   }
@@ -28,6 +28,7 @@ export class Evaluate {
 
   evaluate(exp: Expression): void {
     this._result = this.evaluateExpression(exp);
+    if (this.errors.length !== 0) this._result = undefined;
   }
 
   private evaluateExpression(exp: Expression): number {
@@ -37,17 +38,21 @@ export class Evaluate {
       case NodeKind.VariableExpression:
         let data: number | undefined = this._variables.get(exp.value);
         if (data === undefined) {
-          this._result = undefined;
-          throw new Error(`Variable '${exp.value}' is used before initialization. Result Undefined.`)
+          this._errors.push(`Variable '${exp.value}' is used before initialization. Result Undefined.`);
+          // throw new Error(`Variable '${exp.value}' is used before initialization. Result Undefined.`)
+          return -1;
         }
         return data;
 
       case NodeKind.InitializationExpression:
-        if (this._variables.get(exp.left.value) === undefined)
-          this._variables.set(exp.left.value, undefined);
-        let res = this.evaluateExpression(exp.right);
-        this._variables.set(exp.left.value, res);
-        return res;
+        // if (this._variables.get(exp.left.value) === undefined)
+        //   this._variables.set(exp.left.value, undefined);
+        // let res = this.evaluateExpression(exp.right);
+        // this._variables.set(exp.left.value, res);
+        // return res;
+        let initial_data: number = this.evaluateExpression(exp.right);
+        this._variables.set(exp.left.value, initial_data);
+        return initial_data;
 
       // numbers and boolean
       case NodeKind.LiteralExpression:

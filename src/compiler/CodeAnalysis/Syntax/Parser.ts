@@ -61,11 +61,20 @@ export class Parser {
     return null;
   }
 
-  parser(): ExpressionSyntax {
+  parser(): Array<ExpressionSyntax> {
     this.setTokens();
-    const expression = this.parseExpression();
+    let statements:Array<ExpressionSyntax> = [];
+
+    if (this.errors.length !== 0)
+      return statements;
+
+    while (this.getCurrent().kind !== TokenKind.EndOfFileToken) {
+      const expression = this.parseExpression();
+      statements.push(expression)
+    }
+
     this.matchKind(TokenKind.EndOfFileToken);
-    return expression;
+    return statements;
   }
 
   private parseExpression(): ExpressionSyntax {

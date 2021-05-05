@@ -48,8 +48,9 @@ export class Lexer {
       // whitespace
       case ' ':
       case '\t':
+      case '\n':
         let whiteSpaceStr = "";
-        while (this.getChar() === ' ' || this.getChar() === '\t') {
+        while (this.getChar() === ' ' || this.getChar() === '\t' || this.getChar() === '\n') {
           whiteSpaceStr = whiteSpaceStr + ' ';
           this.next();
         }
