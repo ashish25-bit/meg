@@ -35,6 +35,15 @@ export class Evaluate {
 
     switch (exp.kind) {
 
+      case NodeKind.BlockExpression:
+        let b_data: Array<number> = [];
+
+        for (const statement of exp.statements) {
+          b_data.push(this.evaluateExpression(statement));
+        }
+
+        return b_data[b_data.length - 1];
+
       case NodeKind.VariableExpression:
         let data: number | undefined = this._variables.get(exp.value);
         if (data === undefined) {
@@ -45,11 +54,6 @@ export class Evaluate {
         return data;
 
       case NodeKind.InitializationExpression:
-        // if (this._variables.get(exp.left.value) === undefined)
-        //   this._variables.set(exp.left.value, undefined);
-        // let res = this.evaluateExpression(exp.right);
-        // this._variables.set(exp.left.value, res);
-        // return res;
         let initial_data: number = this.evaluateExpression(exp.right);
         this._variables.set(exp.left.value, initial_data);
         return initial_data;

@@ -12,6 +12,7 @@ import {
 } from './OperatorPrecedence';
 import { InitializationExpressionSyntax } from './InitializationExpressionSyntax';
 import { VariableExpressionSyntax } from './VariableExpressionSyntax';
+import { BlockExpressionSyntax } from './BlockExpressionSyntax';
 
 export class Parser {
   private expression: string;
@@ -68,7 +69,7 @@ export class Parser {
     if (this.errors.length !== 0)
       return statements;
 
-    while (this.getCurrent().kind !== TokenKind.EndOfFileToken) {
+    while (this.position < this.tokens.length && this.getCurrent().kind !== TokenKind.EndOfFileToken) {
       const expression = this.parseExpression();
       statements.push(expression)
     }
@@ -78,8 +79,29 @@ export class Parser {
   }
 
   private parseExpression(): ExpressionSyntax {
+    // checking for opening curly brace
+    if (this.getCurrent().kind === TokenKind.OpenCurlyBraceToken) {
+      let openBrace = this.nextToken();
+      let statements: Array<ExpressionSyntax> = this.parseStatments();
+      if (this.matchKind(TokenKind.CloseCurlyBraceToken))
+        return new BlockExpressionSyntax(openBrace, statements, this.nextToken());
+    }
+
     return this.parseAssignmentExpression();
   }
+
+  private parseStatments(): Array<ExpressionSyntax> {
+    let statements: Array<ExpressionSyntax> = [];
+
+    while (
+      this.getCurrent().kind !== TokenKind.EndOfFileToken &&
+      this.getCurrent().kind !== TokenKind.CloseCurlyBraceToken
+    ) {
+      let statement: ExpressionSyntax = this.parseExpression();
+      statements.push(statement);
+    }
+    return statements;
+}
 
   private parseAssignmentExpression(): ExpressionSyntax {
     let pos1 = this.lookAhead(0);

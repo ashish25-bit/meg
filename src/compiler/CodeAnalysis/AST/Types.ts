@@ -5,5 +5,6 @@ export enum Types {
     BinaryExpression = "binary-expression",
     UnaryExpression = "unary-expression",
     InitializationExpression = "initialization-expression",
-    VariableExpression = "variable"
+    VariableExpression = "variable",
+    BlockExpression = "block-expression",
 };

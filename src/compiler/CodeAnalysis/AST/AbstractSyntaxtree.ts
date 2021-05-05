@@ -8,6 +8,8 @@ import { UnaryExpression } from './UnaryExpression';
 import { UnaryOperatorKind } from './UnaryOperatorKind';
 import { VariableExpression } from './VariableExpression';
 import { InitializationExpression } from './InitializationExpression';
+import { BlockExpression } from './BlockExpression';
+import { SyntaxToken } from '../Syntax/SyntaxToken';
 
 export class Binder {
 
@@ -26,6 +28,9 @@ export class Binder {
         switch(syntax.kind) {
             case TokenKind.ParenthesizedExpression:
                 return this.bind(syntax.expression, variables)
+
+            case TokenKind.BlockExpression:
+                return this.bindBlockExpression(syntax, variables);
 
             case TokenKind.NumberToken:
             case TokenKind.BooleanFalseToken:
@@ -81,6 +86,18 @@ export class Binder {
         let operator: BinaryOperatorKind | null = this.bindBinaryOperatorKind(syntax.operator.kind);
 
         return new InitializationExpression(left, { kind: operator, value: '=' }, right); 
+    }
+
+    private bindBlockExpression(syntax: ExpressionSyntax, variables: Map<string, any>): Expression {
+        const openBrace: SyntaxToken = syntax.openBrace;
+        const closeBrace: SyntaxToken = syntax.closeBrace;
+        let statements: Array<Expression> = [];
+        for (const statement of syntax.statements) {
+            const res = this.bind(statement, variables);
+            statements.push(res);
+        }
+
+        return new BlockExpression(openBrace, statements, closeBrace);
     }
 
     bindUnaryOperatorKind(kind: TokenKind, operand: Expression): UnaryOperatorKind | null {

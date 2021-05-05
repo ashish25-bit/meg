@@ -3,5 +3,6 @@ export enum NodeKind {
     LiteralExpression,
     BinaryExpression,
     VariableExpression,
-    InitializationExpression
+    InitializationExpression,
+    BlockExpression
 }

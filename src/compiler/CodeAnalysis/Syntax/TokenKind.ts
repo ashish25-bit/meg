@@ -3,6 +3,8 @@ export enum TokenKind {
     WhiteSpaceToken,
     EndOfFileToken,
 
+    OpenCurlyBraceToken,
+    CloseCurlyBraceToken,
     OpenBracketToken,
     CloseBracketToken,
     UnaryNotOperator,
@@ -22,6 +24,7 @@ export enum TokenKind {
     BooleanFalseToken,
     IdentifierToken,
 
+    BlockExpression,
     UnaryExpressionToken,
     BinaryExpressionToken,
     ParenthesizedExpression,

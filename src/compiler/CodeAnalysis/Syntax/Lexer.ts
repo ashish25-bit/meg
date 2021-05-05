@@ -134,6 +134,12 @@ export class Lexer {
 
       case ')':
         return new SyntaxToken(')', TokenKind.CloseBracketToken, null);
+      
+      case '{':
+        return new SyntaxToken('{', TokenKind.OpenCurlyBraceToken, null);
+
+      case '}':
+        return new SyntaxToken('}', TokenKind.CloseCurlyBraceToken, null);
 
       default:
 
