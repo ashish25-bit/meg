@@ -4,6 +4,7 @@ import { Binder } from './CodeAnalysis/AST/AbstractSyntaxtree';
 import { Expression } from './CodeAnalysis/AST/Expression';
 import { Evaluate } from './CodeAnalysis/Evaluate';
 import { ReturnData } from '../utils/ReturnData';
+import { ErrorObj } from './CodeAnalysis/ErrorHandling'
 
 function getReturnData(error: boolean, data: any, lineNumber: number = -1): ReturnData {
   const log: ReturnData = {
@@ -14,14 +15,16 @@ function getReturnData(error: boolean, data: any, lineNumber: number = -1): Retu
   return log;
 }
 
-export const expressionAnalyzer = (expression: string,  variables: Map<string, number>, lineNumber: number): ReturnData => {
+export const expressionAnalyzer = (expression: string,  variables: Map<string, number>, lineNumber: number = 0): ReturnData => {
 	
   try {
+    ErrorObj.initialize();
+
     const parser = new Parser(expression);
     const statements:Array<ExpressionSyntax> = parser.parser();
 
-    if (parser.errors.length) 
-      return getReturnData(true, parser.errors, lineNumber);
+    if (ErrorObj.errors.length) 
+      return getReturnData(true, ErrorObj.errors, lineNumber);
 
     const AST = new Binder();
     let results:Array<ReturnData> = [];
@@ -29,14 +32,14 @@ export const expressionAnalyzer = (expression: string,  variables: Map<string, n
     for (const exp of statements) {
       const ast: Expression = AST.bind(exp, variables);
   
-      if (AST.errors.length)
-        return getReturnData(true, AST.errors, lineNumber);
+      if (ErrorObj.errors.length)
+        return getReturnData(true, ErrorObj.errors, lineNumber);
   
       const evaluate = new Evaluate(variables);
       evaluate.evaluate(ast);
   
-      if (evaluate.errors.length)
-        return getReturnData(true, evaluate.errors, lineNumber);
+      if (ErrorObj.errors.length)
+        return getReturnData(true, ErrorObj.errors, lineNumber);
       
       const res = getReturnData(false, evaluate.result);
       results.push(res);

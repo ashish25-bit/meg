@@ -1,23 +1,18 @@
 import { getKeywordKind } from './Keyword';
 import { SyntaxToken } from './SyntaxToken';
 import { TokenKind } from './TokenKind';
+import { ErrorObj } from '../ErrorHandling';
 
 export class Lexer {
   private expression: string;
   private position: number;
-  private _errors: Array<string>;
 
   constructor(expression: string) {
     this.expression = expression;
     this.position = -1;
-    this._errors = [];
   }
 
   private next = (): void => { this.position++; };
-
-  get errors(): Array<string> {
-    return this._errors;
-  }
 
   private getChar(): string {
     if (this.position === this.expression.length)
@@ -167,7 +162,7 @@ export class Lexer {
 
     }
 
-    this._errors.push(`Bad token: ${ch}`);
+    ErrorObj.ReportBadCharacter(ch);
     return new SyntaxToken(ch, TokenKind.BadToken, null);
   }
 }

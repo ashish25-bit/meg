@@ -10,18 +10,19 @@ import { VariableExpression } from './VariableExpression';
 import { InitializationExpression } from './InitializationExpression';
 import { BlockExpression } from './BlockExpression';
 import { SyntaxToken } from '../Syntax/SyntaxToken';
+import { ErrorObj } from '../ErrorHandling';
 
 export class Binder {
 
-    private _errors: Array<string>;
+    // private _errors: Array<string>;
 
-    constructor() {
-        this._errors = [];
-    }
+    // constructor() {
+    //     this._errors = [];
+    // }
     
-    get errors() {
-        return this._errors;
-    }
+    // get errors() {
+    //     return this._errors;
+    // }
 
     bind(syntax: ExpressionSyntax, variables: Map<string, any>): Expression {
 
@@ -50,6 +51,7 @@ export class Binder {
                 return this.bindInitializationExpression(syntax, variables);
 
             default:
+                ErrorObj.ReportUnknownKind(syntax.kind);
                 throw new Error(`Unexpected syntax kind: '${TokenKind[syntax.kind]}'`);
         }
     }
@@ -114,6 +116,7 @@ export class Binder {
                 return UnaryOperatorKind.Not;
 
             default:
+                ErrorObj.ReportUnknownUnaryOperator(kind);
                 throw new Error(`Unexpected unary token kind '${TokenKind[kind]}'`);
         }
     } 
@@ -153,6 +156,7 @@ export class Binder {
                 return BinaryOperatorKind.Assignment;
 
             default:
+                ErrorObj.ReportUnkownBinaryOperator(kind);
                 throw new Error(`Unexpected binary token kind '${TokenKind[kind]}'`);
         }
     }

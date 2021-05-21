@@ -15,6 +15,6 @@ export const mainEvaluator = (lineData: Array<string>): ReturnData => {
 
     expression = expression + line + '\n';
   }
-  result = expressionAnalyzer(expression, variables, -1);
+  result = expressionAnalyzer(expression, variables);
   return result;
 }

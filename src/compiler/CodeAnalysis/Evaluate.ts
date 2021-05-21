@@ -2,20 +2,18 @@ import { BinaryOperatorKind } from "./AST/BinaryOperatorKind";
 import { Expression } from "./AST/Expression";
 import { NodeKind } from "./AST/NodeKind";
 import { UnaryOperatorKind } from "./AST/UnaryOperatorKind";
+import { ErrorObj } from "./ErrorHandling";
 
 export class Evaluate {
   private _variables: Map<string, number>;
   private _result: any;
-  private _errors: Array<string>;
+  private error_status: boolean;
 
   constructor(variables: Map<string, number>) {
     this._variables = variables;
-    this._errors = [];
+    // this._errors = [];
     this._result = undefined;
-  }
-
-  get errors() {
-    return this._errors;
+    this.error_status = false;
   }
 
   get result() {
@@ -28,7 +26,7 @@ export class Evaluate {
 
   evaluate(exp: Expression): void {
     this._result = this.evaluateExpression(exp);
-    if (this.errors.length !== 0) this._result = undefined;
+    if (this.error_status) this._result = undefined;
   }
 
   private evaluateExpression(exp: Expression): number {
@@ -47,8 +45,8 @@ export class Evaluate {
       case NodeKind.VariableExpression:
         let data: number | undefined = this._variables.get(exp.value);
         if (data === undefined) {
-          this._errors.push(`Variable '${exp.value}' is used before initialization. Result Undefined.`);
-          // throw new Error(`Variable '${exp.value}' is used before initialization. Result Undefined.`)
+          ErrorObj.ReportUndefinedVariable(exp.value);
+          this.error_status = true;
           return -1;
         }
         return data;

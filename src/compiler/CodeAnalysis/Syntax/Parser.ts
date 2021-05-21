@@ -13,22 +13,17 @@ import {
 import { InitializationExpressionSyntax } from './InitializationExpressionSyntax';
 import { VariableExpressionSyntax } from './VariableExpressionSyntax';
 import { BlockExpressionSyntax } from './BlockExpressionSyntax';
+import { ErrorObj } from '../ErrorHandling';
 
 export class Parser {
   private expression: string;
   private tokens: Array<SyntaxToken>;
   private position: number;
-  private _errors: Array<string>;
 
   constructor(exp: string) {
     this.expression = exp;
     this.tokens = [];
     this.position = 0;
-    this._errors = [];
-  }
-
-  get errors(): Array<string> {
-    return this._errors;
   }
 
   private setTokens(): void {
@@ -42,7 +37,6 @@ export class Parser {
       token = lexer.nextToken();
     }
     this.tokens.push(token);
-    this._errors = [...lexer.errors];
   }
 
   private nextToken(): SyntaxToken {
@@ -66,7 +60,7 @@ export class Parser {
     this.setTokens();
     let statements:Array<ExpressionSyntax> = [];
 
-    if (this.errors.length !== 0)
+    if (ErrorObj.errors.length !== 0)
       return statements;
 
     while (this.position < this.tokens.length && this.getCurrent().kind !== TokenKind.EndOfFileToken) {
@@ -153,8 +147,9 @@ export class Parser {
   private matchKind(kind: TokenKind): boolean {
     if (this.getCurrent().kind === kind)
       return true;
+    
     // report error
-    this._errors.push(`Unexpected token ${TokenKind[this.getCurrent().kind]}, expected ${TokenKind[kind]}`);
+    ErrorObj.ReportWorngTokenKind(this.getCurrent().kind, kind);
     return false;
   }
 
