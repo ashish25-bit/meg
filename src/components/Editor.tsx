@@ -1,12 +1,16 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { EditorContext } from '../utils/EditorContext';
 import Gutter from './Gutter';
 import { KeyboardEventKeys } from '../utils/KeyboardEvent';
 
 const Editor: React.FC = () => {
+  
+  const [inputVal, setInputVal] = useState<string>("");
+  const [cursorLeft, setCursorLeft] = useState<Number>(10);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const editorContaineRef = useRef<HTMLDivElement>(null);
+  const spanRef = useRef<HTMLSpanElement>(null);
 
   const {
     lines, setLines,
@@ -14,11 +18,6 @@ const Editor: React.FC = () => {
     lineData, setLineData,
     run
   } = useContext(EditorContext);
-
-  function setInputVal(str: string) {
-    if (inputRef.current)
-      inputRef.current.value = str;
-  }
 
   function captureKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
 
@@ -28,14 +27,14 @@ const Editor: React.FC = () => {
       return;
     }
 
-    // reset command
-    if ((e.key === 'x' || e.key === 'X') && e.altKey) {
-      setInputVal(" ");
-      setLineData([]);
-      setLines(1);
-      setCurrentLine(1);
-      return;
-    }
+    // // reset command
+    // else if ((e.key === 'x' || e.key === 'X') && e.altKey) {
+    //   setInputVal(" ");
+    //   setLineData([]);
+    //   setLines(1);
+    //   setCurrentLine(1);
+    //   return;
+    // }
 
     // Enter
     else if (e.key === KeyboardEventKeys.ENTER) {
@@ -67,18 +66,7 @@ const Editor: React.FC = () => {
       setLines((prevState: number) => prevState + 1);
       setCurrentLine((prevState: number) => prevState + 1);
       setInputVal(newEditorData);
-
-      const event = new KeyboardEvent('keypress', {
-        key: 'a',
-      });
-
-      setTimeout(
-        () => {
-          inputRef.current?.setSelectionRange(0, 100);
-          inputRef.current?.dispatchEvent(event);
-        }
-        , 10
-      );
+      setCursorLeft(10);
     }
 
     // for removing line when backspace and the cursor is at the end
@@ -142,10 +130,49 @@ const Editor: React.FC = () => {
     setLineData(newArray);
   }
 
-  function clickOnLine(lineIndex: number): void {
-    setInputVal(lineData[lineIndex]);
-    setCurrentLine(lineIndex + 1);
+  // function clickOnLine(lineIndex: number): void {
+  function clickOnLine(lineIndex: number = -1): void {
     inputRef.current?.focus();
+
+    if (lineIndex !== -1) {
+      setInputVal(lineData[lineIndex]);
+      setCurrentLine(lineIndex + 1);
+      changeCursorPosition(lineData[lineIndex], lineData[lineIndex].length);
+    }
+  }
+
+  function inputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setInputVal(e.target.value)
+    changeCursorPosition();
+  }
+
+  function changeCursorPosition(str: string = "", pos: number = -1) {
+    let position: number | null;
+    let replaceValue: string;
+
+    if (pos === -1)
+      position = inputRef.current ? inputRef.current.selectionStart : 0;
+    else 
+      position = pos;
+
+    if (str !== "")
+      replaceValue = str.substring(0, position ? position : 0);
+    else 
+      replaceValue = inputRef.current ? inputRef.current.value.substring(0, position ? position : 0) : "";
+
+    if (spanRef.current)
+      spanRef.current.innerText = replaceValue;
+
+    setCursorLeft(10 + (spanRef.current ? spanRef.current.offsetWidth : 0));
+  }
+
+  function keyUp(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (
+      e.key === KeyboardEventKeys.TAB ||
+      e.key === KeyboardEventKeys.ARROW_LEFT ||
+      e.key === KeyboardEventKeys.ARROW_RIGHT
+    )
+      changeCursorPosition()
   }
 
   return (
@@ -153,30 +180,52 @@ const Editor: React.FC = () => {
     <div className="editorContainer" ref={editorContaineRef}>
       <Gutter lines={lines} currentLine={currentLine} />
 
+      <span ref={spanRef} className="inputSpan"></span>
       <div className="editor">
         <input
           className="editor-input"
           ref={inputRef}
-          style={{ top: `${(currentLine - 1) * 26}px` }}
-          onKeyDown={e => captureKeyDown(e)}
+          onKeyDownCapture={e => captureKeyDown(e)}
           spellCheck={false}
           autoCapitalize="off"
           autoCorrect="off"
           autoComplete="off"
           autoFocus={true}
+          value={inputVal}
+          onChange={inputChange}
           onBlur={() => onBlurEventCapture()}
+          onKeyUp={keyUp}
         />
         {
           new Array(lines).fill(0).map((_, i) => (
-            <pre
-              className={i + 1 === currentLine ?
-                'current-line editor-line' :
-                'editor-line'}
-              key={i}
-              onClick={() => clickOnLine(i)}
-            >
-              {i + 1 === currentLine ? "" : lineData[i]}
-            </pre>
+            i + 1 === currentLine ? 
+              <div 
+                className='editor-line current-line' 
+                key={i}
+                // style={{ top: `${(currentLine - 1) * 26}px` }}
+                onClick={() => clickOnLine()}
+              >
+                <div
+                  style={{
+                    width: '0.5px',
+                    height: '21px',
+                    background: '#fff',
+                    position: 'absolute',
+                    left: `${cursorLeft}px`,
+                    zIndex: 10000,
+                    top: "50%",
+                    transform: 'translateY(-50%)'
+                  }}
+                ></div>
+                <pre>{inputVal}</pre>
+              </div> : 
+              <pre 
+                key={i} className="editor-line"
+                onClick={() => clickOnLine(i)}
+              >
+                {lineData[i]}
+              </pre>
+
           ))
         }
       </div>

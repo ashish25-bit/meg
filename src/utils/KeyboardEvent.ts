@@ -5,5 +5,7 @@ export enum KeyboardEventKeys {
   DOWN = 'ArrowDown',
   UP = 'ArrowUp',
   DELETE = 'Delete',
-  NUMPAD_DELETE = 'NumpadDecimal,'
+  NUMPAD_DELETE = 'NumpadDecimal',
+  ARROW_RIGHT = 'ArrowRight',
+  ARROW_LEFT = 'ArrowLeft',
 }

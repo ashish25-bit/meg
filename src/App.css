@@ -37,6 +37,17 @@
   }
 }
 
+.editorContainer .inputSpan {
+  position: absolute;
+  font-family: var(--editor-font-family);
+  letter-spacing: var(--editor-letter-spacing);
+  white-space: pre;
+  z-index: -100000;
+  top: -26px;
+  background: rgba(255, 0, 0, 0.219);
+  visibility: hidden;
+}
+
 .editorContainer,
 .outputContainer {
   font-size: var(--editor-font-size);
@@ -73,10 +84,12 @@
   position: absolute;
   left: 0;
   width: calc(100% - 20px);
-  z-index: 100000;
   font-size: var(--editor-font-size);
   font-family: var(--editor-font-family);
   letter-spacing: var(--editor-letter-spacing);
+  top: -26px;
+  z-index: -100000;
+  /* top: 60%; */
 }
 
 .editorContainer .editor .editor-line {
@@ -89,8 +102,11 @@
   font-family: var(--editor-font-family);
 }
 .editorContainer .editor .editor-line.current-line {
-  opacity: 0;
-  pointer-events: none;
+  background: var(--editor-current-line);
+  position: relative;
+}
+.editorContainer .editor .editor-line.current-line pre {
+  font-family: var(--editor-font-family);
 }
 
 .editorContainer .gutter {
