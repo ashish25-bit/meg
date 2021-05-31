@@ -16,7 +16,7 @@ const Editor: React.FC = () => {
     lines, setLines,
     currentLine, setCurrentLine,
     lineData, setLineData,
-    run
+    run, reset
   } = useContext(EditorContext);
 
   function captureKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -28,13 +28,10 @@ const Editor: React.FC = () => {
     }
 
     // // reset command
-    // else if ((e.key === 'x' || e.key === 'X') && e.altKey) {
-    //   setInputVal(" ");
-    //   setLineData([]);
-    //   setLines(1);
-    //   setCurrentLine(1);
-    //   return;
-    // }
+    else if ((e.key === 'x' || e.key === 'X') && e.altKey) {
+      reset();
+      return;
+    }
 
     // Enter
     else if (e.key === KeyboardEventKeys.ENTER) {

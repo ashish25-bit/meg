@@ -45,8 +45,12 @@ class Errors {
     Errors._errors.push(msg);
   }
 
-  ReportIllegalLeftHandAssignment(value: string) {
-    const msg = `Cannot Assign to a constant ${value}`;
+  ReportIllegalLeftHandAssignment(value: string | null = null) {
+    let msg: string;
+    if (value)
+      msg = `Cannot Assign to a constant ${value}`;
+    else 
+      msg = `Cannot Assign to a constant an expression`;
     Errors._errors.push(msg);
   }
 }

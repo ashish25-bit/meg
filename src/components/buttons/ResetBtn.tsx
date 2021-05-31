@@ -6,11 +6,9 @@ import { ButtonProp } from '../../utils/ButtonProp';
 
 const ResetBtn = ({ width }: ButtonProp) => {
 
-  const { setOutputData } = useContext(EditorContext);
+  const { reset } = useContext(EditorContext);
   
-  const clickHandler = (): void => {
-    setOutputData(null);
-  }
+  const clickHandler = (): void => reset();
 
   return (
     <BtnTitle title="Alt + X">

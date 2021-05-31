@@ -17,6 +17,13 @@ const MainContainer: React.FC = () =>  {
   ]);
   const [outputData, setOutputData] = useState(null);
 
+  const reset = () => {
+    setOutputData(null);
+    setLineData([]);
+    setCurrentLine(1);
+    setLines(1);
+  }
+
   const run = () => {
     const data: any = mainEvaluator(lineData);
     setOutputData(data);
@@ -26,7 +33,7 @@ const MainContainer: React.FC = () =>  {
     <EditorContext.Provider
       value={{
         outputData, setOutputData,
-        run,
+        run, reset,
         lines, setLines,
         currentLine, setCurrentLine,
         lineData, setLineData

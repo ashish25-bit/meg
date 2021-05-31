@@ -65,6 +65,8 @@ export class Parser {
 
     while (this.position < this.tokens.length && this.getCurrent().kind !== TokenKind.EndOfFileToken) {
       const expression = this.parseExpression();
+      if (ErrorObj.errors.length)
+        return statements;
       statements.push(expression)
     }
 
@@ -101,7 +103,25 @@ export class Parser {
     let pos1 = this.lookAhead(0);
     let pos2 = this.lookAhead(1);
 
-    while (pos1 !== null && pos2 !== null && pos1.kind === TokenKind.IdentifierToken && pos2.kind === TokenKind.AssignmentOperatorToken) {
+    if (pos1 && pos1.kind === TokenKind.AssignmentOperatorToken) {
+      ErrorObj.ReportIllegalLeftHandAssignment();
+      return new SyntaxToken(this.nextToken().token, TokenKind.BadToken, null);
+    }
+
+    if (
+      pos1 && pos2 &&
+      pos1.kind === TokenKind.NumberToken &&
+      pos2.kind === TokenKind.AssignmentOperatorToken
+    ) {
+        ErrorObj.ReportIllegalLeftHandAssignment(pos1.token);
+        return new SyntaxToken(this.nextToken().token, TokenKind.BadToken, null);
+    }
+
+    while (
+      pos1 !== null && pos2 !== null && 
+      pos1.kind === TokenKind.IdentifierToken && 
+      pos2.kind === TokenKind.AssignmentOperatorToken
+    ) {
       let left = this.parsePrimaryExpression();
       let operator = this.nextToken();
       let right = this.parseAssignmentExpression();
