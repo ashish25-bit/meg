@@ -57,7 +57,7 @@ const Editor: React.FC = () => {
         newEditorData = inputRef.current?.value.substring(index2, index1);
       }
 
-      newArray[currentLine - 1] = `${replaceValue} `;
+      newArray[currentLine - 1] = `${replaceValue}\n`;
 
       setLineData(newArray);
       setLines((prevState: number) => prevState + 1);
@@ -123,7 +123,7 @@ const Editor: React.FC = () => {
 
   function onBlurEventCapture() {
     let newArray = [...lineData];
-    newArray[currentLine - 1] = `${inputRef.current?.value} `;
+    newArray[currentLine - 1] = `${inputRef.current?.value}\n`;
     setLineData(newArray);
   }
 
