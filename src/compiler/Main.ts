@@ -15,6 +15,16 @@ export const mainEvaluator = (lineData: Array<string>): ReturnData => {
 
     expression = expression + line + '\n';
   }
+
+  variables.clear();
   result = expressionAnalyzer(expression, variables);
+
+  if (result.error)
+    return result;
+
+  let keyValue = "";
+  variables.forEach((value, key) => keyValue = keyValue + "\n" + key + ": " + value);
+  result.data += keyValue;
+
   return result;
 }

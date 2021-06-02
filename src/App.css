@@ -148,3 +148,7 @@
   color: #fff;
   transition: all ease 0.5s;
 }
+
+.outputContainer .output-no-error {
+  font-family: var(--editor-font-family);
+}

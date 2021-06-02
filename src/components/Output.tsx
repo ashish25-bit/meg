@@ -11,7 +11,7 @@ const Output: React.FC = () => {
           <div style={{ color: "#767676" }}>Output</div> :
 
           !outputData.error ?
-            <div>{outputData.data}</div> :
+            <pre className='output-no-error'>{outputData.data}</pre> :
             <Fragment>
               <div style={{ color: "#F74000", fontStyle: 'italic' }}>Error at line: {outputData.lineNumber + 1}</div>
               <div>{

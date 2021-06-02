@@ -5,6 +5,8 @@ import { Evaluate } from './CodeAnalysis/Evaluate';
 import { ReturnData } from '../utils/ReturnData';
 import { ErrorObj } from './CodeAnalysis/ErrorHandling'
 import { Unit } from './CodeAnalysis/AST/Unit';
+import { NodeKind } from './CodeAnalysis/AST/NodeKind';
+import { Scope } from './CodeAnalysis/AST/Scope';
 
 function getReturnData(error: boolean, data: any, lineNumber: number = -1): ReturnData {
   const log: ReturnData = {
@@ -41,15 +43,27 @@ export const expressionAnalyzer = (expression: string,  variables: Map<string, n
       if (ErrorObj.errors.length)
         return getReturnData(true, ErrorObj.errors, lineNumber);
       
-      console.log(unit);
-
+      addToMap(variables, unit.scope);
+      if (unit.expression.kind === NodeKind.BlockExpression) {
+        for (const statement of unit.expression.statements) {
+          if (statement.scope !== undefined)
+            addToMap(variables, statement.scope)
+        }
+      }
+      
       const res = getReturnData(false, evaluate.result);
       results.push(res);
     }
-    console.log(results)
+
     return results[results.length - 1];
   }
   catch (err) {
     return getReturnData(true, [err.message], lineNumber);
   }  
+}
+
+function addToMap(variables: Map<string, number>, scope: Scope) {
+  scope.variables.forEach((value, key) => {
+    variables.set(key, value);
+  })
 }
