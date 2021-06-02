@@ -1,10 +1,10 @@
 import { Parser } from './CodeAnalysis/Syntax/Parser';
 import { ExpressionSyntax } from './CodeAnalysis/Syntax/ExpressionSyntax';
 import { Binder } from './CodeAnalysis/AST/AbstractSyntaxtree';
-import { Expression } from './CodeAnalysis/AST/Expression';
 import { Evaluate } from './CodeAnalysis/Evaluate';
 import { ReturnData } from '../utils/ReturnData';
 import { ErrorObj } from './CodeAnalysis/ErrorHandling'
+import { Unit } from './CodeAnalysis/AST/Unit';
 
 function getReturnData(error: boolean, data: any, lineNumber: number = -1): ReturnData {
   const log: ReturnData = {
@@ -30,20 +30,21 @@ export const expressionAnalyzer = (expression: string,  variables: Map<string, n
     let results:Array<ReturnData> = [];
     
     for (const exp of statements) {
-      const ast: Expression = AST.bind(exp, variables);
-  
+      const unit: Unit = AST.bind(exp);
+      
       if (ErrorObj.errors.length)
         return getReturnData(true, ErrorObj.errors, lineNumber);
   
-      const evaluate = new Evaluate(variables);
-      evaluate.evaluate(ast);
+      const evaluate = new Evaluate(unit);
+      evaluate.evaluate(unit);
   
       if (ErrorObj.errors.length)
         return getReturnData(true, ErrorObj.errors, lineNumber);
       
+      console.log(unit);
+
       const res = getReturnData(false, evaluate.result);
       results.push(res);
-      variables = evaluate.variables;
     }
     console.log(results)
     return results[results.length - 1];

@@ -11,44 +11,60 @@ import { InitializationExpression } from './InitializationExpression';
 import { BlockExpression } from './BlockExpression';
 import { SyntaxToken } from '../Syntax/SyntaxToken';
 import { ErrorObj } from '../ErrorHandling';
+import { Stack } from '../../utils/Stack';
+import { Scope } from './Scope';
+import { Unit } from './Unit';
 
 export class Binder {
+    private scopeNum: number;
+    private scopeStack: Stack<Scope>;
+    private currScope: Scope;
 
-    // private _errors: Array<string>;
+    constructor() {
+        this.scopeNum = 0;
+        this.scopeStack = new Stack<Scope>();
+        this.currScope = new Scope(null, 0);
+        this.scopeStack.push(this.currScope);
+    }
 
-    // constructor() {
-    //     this._errors = [];
-    // }
-    
-    // get errors() {
-    //     return this._errors;
-    // }
-
-    bind(syntax: ExpressionSyntax, variables: Map<string, any>): Expression {
+    bind(syntax: ExpressionSyntax): Unit {
 
         switch(syntax.kind) {
             case TokenKind.ParenthesizedExpression:
-                return this.bind(syntax.expression, variables)
+                return this.bind(syntax.expression)
 
             case TokenKind.BlockExpression:
-                return this.bindBlockExpression(syntax, variables);
+                this.addNewScope();
+                const blockExp: Expression = this.bindBlockExpression(syntax);
+
+                const unit: Unit = this.getUnit(blockExp);
+
+                this.scopeNum--;
+                this.scopeStack.pop();
+                this.currScope = this.scopeStack.top();
+                return unit;
 
             case TokenKind.NumberToken:
             case TokenKind.BooleanFalseToken:
             case TokenKind.BooleanTrueToken:
-                return this.bindLiteralExpression(syntax);
+                const literalExp: Expression = this.bindLiteralExpression(syntax);
+                return this.getUnit(literalExp);
 
             case TokenKind.UnaryExpressionToken:
-                return this.bindUnaryExpression(syntax, variables);
+                const unaryExp = this.bindUnaryExpression(syntax);
+                return this.getUnit(unaryExp);
                 
             case TokenKind.BinaryExpressionToken:
-                return this.bindBinaryExpression(syntax, variables);
+                const binaryExp = this.bindBinaryExpression(syntax);
+                return this.getUnit(binaryExp);
 
             case TokenKind.VariableExpression:
-                return this.bindVariableExpression(syntax, variables);
+                const varExp = this.bindVariableExpression(syntax);
+                return this.getUnit(varExp);
 
             case TokenKind.InitializationExpression:
-                return this.bindInitializationExpression(syntax, variables);
+                const initialExp = this.bindInitializationExpression(syntax);
+                return this.getUnit(initialExp);
 
             default:
                 ErrorObj.ReportUnknownKind(syntax.kind);
@@ -56,9 +72,11 @@ export class Binder {
         }
     }
 
-    bindVariableExpression(syntax: ExpressionSyntax, variables: Map<string, any>): Expression {
-        if (!variables.has(syntax.token))
-            variables.set(syntax.token, undefined);
+    bindVariableExpression(syntax: ExpressionSyntax): Expression {
+        // if (!variables.has(syntax.token))
+        //     variables.set(syntax.token, undefined);
+        if (this.currScope.getVariable(syntax) === false)
+            this.currScope.Declare(syntax);
         return new VariableExpression(syntax.token);
     }
 
@@ -67,36 +85,42 @@ export class Binder {
         return new LiteralExpression(value);
     }
 
-    bindUnaryExpression(syntax: ExpressionSyntax, variables: Map<string, any>): Expression {
-        let operand: Expression = this.bind(syntax.operand, variables);
+    bindUnaryExpression(syntax: ExpressionSyntax): Expression {
+        let operand: Expression = this.bind(syntax.operand).expression;
         let operator: UnaryOperatorKind | null = this.bindUnaryOperatorKind(syntax.operator.kind, operand);
 
         return new UnaryExpression(operand, {kind: operator, value: syntax.operator.token});
     }
 
-    bindBinaryExpression(syntax: ExpressionSyntax, variables: Map<string, any>): Expression {
-        let left: Expression = this.bind(syntax.left, variables);
-        let right: Expression = this.bind(syntax.right, variables);
+    bindBinaryExpression(syntax: ExpressionSyntax): Expression {
+        let left: Expression = this.bind(syntax.left).expression;
+        let right: Expression = this.bind(syntax.right).expression;
         let operator: BinaryOperatorKind | null = this.bindBinaryOperatorKind(syntax.operator.kind);
 
         return new BinaryExpression(left, {kind: operator, value: syntax.operator.token}, right);
     }
 
-    bindInitializationExpression(syntax: ExpressionSyntax, variables: Map<string, any>): Expression {
-        let left: Expression = this.bind(syntax.left, variables);
-        let right: Expression = this.bind(syntax.right, variables);
-        let operator: BinaryOperatorKind | null = this.bindBinaryOperatorKind(syntax.operator.kind);
+    bindInitializationExpression(syntax: ExpressionSyntax): Expression {
+        this.currScope.Declare(syntax.left);
 
-        return new InitializationExpression(left, { kind: operator, value: '=' }, right); 
+        let left: Expression = new VariableExpression(syntax.left.token);
+        let right: Expression = this.bind(syntax.right).expression;
+
+        return new InitializationExpression(left, right);
     }
 
-    private bindBlockExpression(syntax: ExpressionSyntax, variables: Map<string, any>): Expression {
+    private bindBlockExpression(syntax: ExpressionSyntax): Expression {
         const openBrace: SyntaxToken = syntax.openBrace;
         const closeBrace: SyntaxToken = syntax.closeBrace;
-        let statements: Array<Expression> = [];
+        let statements: Array<Unit | Expression> = [];
         for (const statement of syntax.statements) {
-            const res = this.bind(statement, variables);
-            statements.push(res);
+            const res = this.bind(statement);
+            if (statement.kind === TokenKind.BlockExpression) {
+                statements.push(res);
+            }
+            else {
+                statements.push(res.expression);
+            }
         }
 
         return new BlockExpression(openBrace, statements, closeBrace);
@@ -159,5 +183,19 @@ export class Binder {
                 ErrorObj.ReportUnkownBinaryOperator(kind);
                 throw new Error(`Unexpected binary token kind '${TokenKind[kind]}'`);
         }
+    }
+
+    private getUnit(exp: Expression): Unit {
+        const top: Scope = this.scopeStack.top();
+        const unit = new Unit(exp, top);
+        return unit;
+    }
+
+    private addNewScope(): void {
+        this.scopeNum++;
+        const parent: Scope = this.scopeStack.top();
+        let newScope: Scope = new Scope(parent, this.scopeNum);
+        this.scopeStack.push(newScope);
+        this.currScope = newScope;
     }
 }

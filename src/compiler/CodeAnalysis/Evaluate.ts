@@ -2,16 +2,17 @@ import { BinaryOperatorKind } from "./AST/BinaryOperatorKind";
 import { Expression } from "./AST/Expression";
 import { NodeKind } from "./AST/NodeKind";
 import { UnaryOperatorKind } from "./AST/UnaryOperatorKind";
+import { Unit } from "./AST/Unit";
 import { ErrorObj } from "./ErrorHandling";
 
 export class Evaluate {
-  private _variables: Map<string, number>;
   private _result: any;
   private error_status: boolean;
+  private currUnit: Unit;
 
-  constructor(variables: Map<string, number>) {
-    this._variables = variables;
-    // this._errors = [];
+
+  constructor(unit: Unit) {
+    this.currUnit = unit;
     this._result = undefined;
     this.error_status = false;
   }
@@ -20,40 +21,46 @@ export class Evaluate {
     return this._result;
   }
 
-  get variables() {
-    return this._variables;
-  }
-
-  evaluate(exp: Expression): void {
-    this._result = this.evaluateExpression(exp);
+  evaluate(unit: Unit): void {
+    this._result = this.evaluateExpression(unit);
     if (this.error_status) this._result = undefined;
   }
 
-  private evaluateExpression(exp: Expression): number {
+  private evaluateExpression(unit: Unit | Expression): any {
+    const exp: Expression = unit.expression !== undefined ? unit.expression : unit;
 
     switch (exp.kind) {
 
       case NodeKind.BlockExpression:
         let b_data: Array<number> = [];
+        const parent: Unit = this.currUnit;
 
         for (const statement of exp.statements) {
+          if (statement.expression !== undefined)
+            this.currUnit = statement;
           b_data.push(this.evaluateExpression(statement));
         }
 
+        this.currUnit = parent;
         return b_data[b_data.length - 1];
 
       case NodeKind.VariableExpression:
-        let data: number | undefined = this._variables.get(exp.value);
-        if (data === undefined) {
-          ErrorObj.ReportUndefinedVariable(exp.value);
-          this.error_status = true;
-          return -1;
+        let data: number | boolean = this.currUnit.scope.getVariable(exp);
+        if (!data) {
+            ErrorObj.ReportUndefinedVariable(exp.token);
+            this.error_status = true;
+            return -1;
         }
         return data;
 
       case NodeKind.InitializationExpression:
         let initial_data: number = this.evaluateExpression(exp.right);
-        this._variables.set(exp.left.value, initial_data);
+        const res = this.currUnit.scope.setVariable(exp.left.token, initial_data);
+        if (!res) {
+            ErrorObj.ReportUndefinedVariable(exp.token);
+            this.error_status = true;
+            return -1;
+        }
         return initial_data;
 
       // numbers and boolean

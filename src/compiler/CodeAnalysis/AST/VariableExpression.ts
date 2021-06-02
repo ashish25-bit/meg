@@ -5,12 +5,12 @@ import { Types } from './Types';
 export class VariableExpression extends Expression {
     type: string;
     kind: NodeKind;
-    value: string;
+    token: string;
 
     constructor(value: string) {
         super();
         this.kind = NodeKind.VariableExpression;
-        this.value = value;
+        this.token = value;
         this.type = Types.VariableExpression;
     }
 }

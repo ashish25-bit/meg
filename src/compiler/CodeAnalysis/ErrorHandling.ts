@@ -41,7 +41,7 @@ class Errors {
   }
 
   ReportUndefinedVariable(value: string) {
-    const msg = `Variable '${value}' is used before initialization. Result Undefined.`;
+    const msg = `Variable '${value}' is not present in the scope. Result undefined`;
     Errors._errors.push(msg);
   }
 
