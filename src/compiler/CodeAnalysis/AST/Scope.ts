@@ -27,14 +27,22 @@ export class Scope {
     return true;
   }
 
-  getVariable(variable: ExpressionSyntax | Expression): any {
-    if (this._variables.has(variable.token))
-      return this._variables.get(variable.token);
+  getVariable(variable: ExpressionSyntax | Expression, checkForUndefined: boolean = false): any {
+    if (this._variables.has(variable.token)) {
+      const data: any = this._variables.get(variable.token);
+
+      if (checkForUndefined) {
+        if (data !== undefined)
+          return data;
+      }
+
+      else return data;
+    }
 
     if (!this.Parent)
       return false;
 
-    return this.Parent.getVariable(variable);
+    return this.Parent.getVariable(variable, checkForUndefined);
   }
 
   setVariable(variable: string, data: any): boolean {

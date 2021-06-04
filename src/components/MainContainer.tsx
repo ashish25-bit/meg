@@ -7,14 +7,20 @@ import { mainEvaluator } from '../compiler/Main';
 
 const MainContainer: React.FC = () =>  {
 
-  const [lines, setLines] = useState(7);
-  const [currentLine, setCurrentLine] = useState(8);
+  const [lines, setLines] = useState(14);
+  const [currentLine, setCurrentLine] = useState(14);
   const [lineData, setLineData] = useState<Array<string>>([
     "a = 10",
     "{",
     "   b = a * 10",
+    "   a = 22",
     "   {",
     "       c = a + b",
+    "       b = c - a",
+    "   }",
+    "   {",
+    "       d = b - a",
+    "       a = d - b",
     "   }",
     "}"
   ]);

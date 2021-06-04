@@ -64,6 +64,6 @@ export const expressionAnalyzer = (expression: string,  variables: Map<string, n
 
 function addToMap(variables: Map<string, number>, scope: Scope) {
   scope.variables.forEach((value, key) => {
-    variables.set(key, value);
+    variables.set(`${key}(${scope.scope})`, value);
   })
 }

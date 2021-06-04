@@ -73,10 +73,15 @@ export class Binder {
     }
 
     bindVariableExpression(syntax: ExpressionSyntax): Expression {
-        // if (!variables.has(syntax.token))
-        //     variables.set(syntax.token, undefined);
-        if (this.currScope.getVariable(syntax) === false)
-            this.currScope.Declare(syntax);
+        // if (this.currScope.getVariable(syntax) === false)
+        //     this.currScope.Declare(syntax);
+        // return new VariableExpression(syntax.token);
+
+        // check whether the variable is present in the current scope or in the parent scope
+        // value can be undefined also
+        if (this.currScope.getVariable(syntax) === false) {
+            ErrorObj.ReportUndefinedVariable(syntax.token);
+        }
         return new VariableExpression(syntax.token);
     }
 
