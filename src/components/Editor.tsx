@@ -1,5 +1,5 @@
-import React, { useContext, useRef, useState } from 'react';
-import { EditorContext } from '../utils/EditorContext';
+import React, { useRef, useState } from 'react';
+import { useEditor } from '../utils/EditorProvider';
 import Gutter from './Gutter';
 import { KeyboardEventKeys } from '../utils/KeyboardEvent';
 
@@ -17,7 +17,7 @@ const Editor: React.FC = () => {
     currentLine, setCurrentLine,
     lineData, setLineData,
     run, reset
-  } = useContext(EditorContext);
+  } = useEditor();
 
   function captureKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
 
@@ -175,7 +175,7 @@ const Editor: React.FC = () => {
   return (
     // document.documentElement.style.setProperty('--your-variable', '#YOURCOLOR');
     <div className="editorContainer" ref={editorContaineRef}>
-      <Gutter lines={lines} currentLine={currentLine} />
+      <Gutter />
 
       <span ref={spanRef} className="inputSpan"></span>
       <div className="editor">

@@ -1,64 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ButtonContainer from './ButtonContainer';
 import Editor from './Editor';
 import Output from './Output';
-import { EditorContext } from '../utils/EditorContext';
-import { mainEvaluator } from '../compiler/Main';
+import { EditorProvider } from '../utils/EditorProvider';
 
 const MainContainer: React.FC = () =>  {
-
-  const [lines, setLines] = useState(14);
-  const [currentLine, setCurrentLine] = useState(14);
-  const [lineData, setLineData] = useState<Array<string>>([
-    "a = 10",
-    "{",
-    "   b = a * 10",
-    "   a = 22",
-    "   {",
-    "       c = a + b",
-    "       b = c - a",
-    "   }",
-    "   {",
-    "       d = b - a",
-    "       a = d - b",
-    "   }",
-    "}"
-  ]);
-  const [outputData, setOutputData] = useState(null);
-
-  const reset = () => {
-    setOutputData(null);
-    setLineData([]);
-    setCurrentLine(1);
-    setLines(1);
-  }
-
-  const run = () => {
-    const data: any = mainEvaluator(lineData);
-    setOutputData(data);
-  }
-
   return (
-    <EditorContext.Provider
-      value={{
-        outputData, setOutputData,
-        run, reset,
-        lines, setLines,
-        currentLine, setCurrentLine,
-        lineData, setLineData
-      }}
-    >
+    <EditorProvider>
       <div className="mainContainer">
-
-        <ButtonContainer />
-        
+        <ButtonContainer />       
         <div className="wrapperContainer">
           <Editor />
           <Output />
         </div>
-        
       </div>
-    </EditorContext.Provider>
+    </EditorProvider>
   )
 }
 

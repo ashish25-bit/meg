@@ -1,15 +1,14 @@
-interface Prop {
-  lines: number;
-  currentLine: number;
-}
+import { useEditor } from '../utils/EditorProvider';
 
-const Gutter = ({ lines, currentLine }: Prop) => {
+const Gutter = () => {
+  const { lines, currentLine } = useEditor();
+
   return (
     <div className="gutter">
       {
-        new Array(lines).fill(0).map((_, index) => {
-          return <div 
-            className={currentLine === index + 1 ? 'current-line dead-center' :  `dead-center`} 
+        [...Array(lines).keys()].map((_, index) => {
+          return <div
+            className={currentLine === index + 1 ? 'current-line dead-center' : `dead-center`}
             key={index}
           >{index + 1}</div>
         })

@@ -1,8 +1,8 @@
-import React, { Fragment, useContext } from 'react';
-import { EditorContext } from '../utils/EditorContext';
+import React, { Fragment } from 'react';
+import { useEditor } from '../utils/EditorProvider';
 
 const Output: React.FC = () => {
-  const { outputData } = useContext(EditorContext);
+  const { outputData } = useEditor();
 
   return (
     <div className="outputContainer">

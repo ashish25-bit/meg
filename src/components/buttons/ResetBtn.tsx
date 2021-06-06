@@ -1,12 +1,11 @@
-import { useContext } from 'react';
 import resetBtn from '../../assets/reset.svg';
-import { EditorContext } from '../../utils/EditorContext';
+import { useEditor } from '../../utils/EditorProvider';
 import BtnTitle from '../BtnTitle';
 import { ButtonProp } from '../../utils/ButtonProp';
 
 const ResetBtn = ({ width }: ButtonProp) => {
 
-  const { reset } = useContext(EditorContext);
+  const { reset } = useEditor();
   
   const clickHandler = (): void => reset();
 
