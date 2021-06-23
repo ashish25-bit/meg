@@ -14,6 +14,7 @@ import { InitializationExpressionSyntax } from './InitializationExpressionSyntax
 import { VariableExpressionSyntax } from './VariableExpressionSyntax';
 import { BlockExpressionSyntax } from './BlockExpressionSyntax';
 import { ErrorObj } from '../ErrorHandling';
+import { VariableDeclarationSyntax } from './VariableDeclarationSyntax';
 
 export class Parser {
   private expression: string;
@@ -83,7 +84,30 @@ export class Parser {
         return new BlockExpressionSyntax(openBrace, statements, this.nextToken());
     }
 
+    else if (
+      this.getCurrent().kind === TokenKind.StringToken ||
+      this.getCurrent().kind === TokenKind.IntegerToken ||
+      this.getCurrent().kind === TokenKind.RealToken ||
+      this.getCurrent().kind === TokenKind.BooleanToken
+    )
+      return this.parseDeclarationStatement();
+
     return this.parseAssignmentExpression();
+  }
+
+  private parseDeclarationStatement(): ExpressionSyntax {
+    const keyword: SyntaxToken = this.nextToken();
+
+    let identifier: SyntaxToken = new SyntaxToken('', TokenKind.BadToken, null);
+    if (this.matchKind(TokenKind.IdentifierToken)) {
+        identifier = this.nextToken();
+    }
+
+    if (this.matchKind(TokenKind.AssignmentOperatorToken))
+        this.nextToken();
+
+    let initializingValue: ExpressionSyntax = this.parseAssignmentExpression();
+    return new VariableDeclarationSyntax(keyword, identifier ,initializingValue);
   }
 
   private parseStatments(): Array<ExpressionSyntax> {
@@ -165,6 +189,11 @@ export class Parser {
   }
 
   private matchKind(kind: TokenKind): boolean {
+    if (this.position >= this.tokens.length) {
+      ErrorObj.BehavoiurNotDefinedYet();
+      return false;
+    }
+
     if (this.getCurrent().kind === kind)
       return true;
     

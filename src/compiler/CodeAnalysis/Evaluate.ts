@@ -31,6 +31,11 @@ export class Evaluate {
 
     switch (exp.kind) {
 
+      case NodeKind.VariableDeclarationExpression: 
+        let declartion_data = this.evaluateExpression(exp.initializer);
+        this.currUnit.scope.setVariable(exp.variable.token, declartion_data);
+        return declartion_data;
+
       case NodeKind.BlockExpression:
         let b_data: Array<number> = [];
         const parent: Unit = this.currUnit;

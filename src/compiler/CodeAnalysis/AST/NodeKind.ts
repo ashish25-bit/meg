@@ -1,8 +1,9 @@
 export enum NodeKind {
-    UnaryExpression,
-    LiteralExpression,
-    BinaryExpression,
-    VariableExpression,
-    InitializationExpression,
-    BlockExpression
+  UnaryExpression,
+  LiteralExpression,
+  BinaryExpression,
+  VariableExpression,
+  InitializationExpression,
+  BlockExpression,
+  VariableDeclarationExpression
 }

@@ -31,12 +31,18 @@ export class Scope {
     if (this._variables.has(variable.token)) {
       const data: any = this._variables.get(variable.token);
 
-      if (checkForUndefined) {
-        if (data !== undefined)
-          return data;
-      }
+      // doesn't matter whether the data is undefined or defined
+      if (!checkForUndefined) return data;
 
-      else return data;
+      // returing if data is not undefined.
+      if (data !== undefined) return data;
+
+      // if (checkForUndefined) {
+      //   if (data !== undefined)
+      //     return data;
+      // }
+
+      // else return data;
     }
 
     if (!this.Parent)

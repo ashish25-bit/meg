@@ -41,7 +41,7 @@ class Errors {
   }
 
   ReportUndefinedVariable(value: string) {
-    const msg = `Variable '${value}' is not present in the scope. Result undefined`;
+    const msg = `Variable '${value}' is not present in the scope.`;
     Errors._errors.push(msg);
   }
 
@@ -52,6 +52,16 @@ class Errors {
     else 
       msg = `Cannot Assign to a constant an expression`;
     Errors._errors.push(msg);
+  }
+
+  ReportVariableAlreadyDeclared(name: any) {
+    const msg = `Variable ${name} already declared in the scope.`;
+    Errors._errors.push(msg);
+  }
+
+  BehavoiurNotDefinedYet() {
+    const msg = `Error not defined yet.`;
+    Errors._errors.push(msg);    
   }
 }
 

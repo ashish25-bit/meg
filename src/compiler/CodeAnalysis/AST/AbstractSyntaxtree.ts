@@ -14,6 +14,7 @@ import { ErrorObj } from '../ErrorHandling';
 import { Stack } from '../../utils/Stack';
 import { Scope } from './Scope';
 import { Unit } from './Unit';
+import { VariableDeclarationExpression } from './VariableDeclarationExpression';
 
 export class Binder {
     private scopeNum: number;
@@ -43,6 +44,10 @@ export class Binder {
                 this.scopeStack.pop();
                 this.currScope = this.scopeStack.top();
                 return unit;
+
+            case TokenKind.VariableDeclaration:
+            const declarationExp = this.bindVariableDeclaration(syntax);
+            return this.getUnit(declarationExp);
 
             case TokenKind.NumberToken:
             case TokenKind.BooleanFalseToken:
@@ -105,11 +110,29 @@ export class Binder {
         return new BinaryExpression(left, {kind: operator, value: syntax.operator.token}, right);
     }
 
-    bindInitializationExpression(syntax: ExpressionSyntax): Expression {
-        this.currScope.Declare(syntax.left);
+    private bindVariableDeclaration(syntax: ExpressionSyntax): Expression {
+        const name = syntax.identifier.token;
+        const variable = new VariableExpression(name);
 
-        let left: Expression = new VariableExpression(syntax.left.token);
-        let right: Expression = this.bind(syntax.right).expression;
+        if (!this.currScope.Declare(syntax.identifier)) {
+            ErrorObj.ReportVariableAlreadyDeclared(name);
+            return variable;
+        }
+        
+        const initializingValue: Expression = this.bind(syntax.initializingValue).expression;
+        return new VariableDeclarationExpression(variable, initializingValue);
+    }
+    
+    bindInitializationExpression(syntax: ExpressionSyntax): Expression {
+        // this.currScope.Declare(syntax.left);
+        const left: Expression = new VariableExpression(syntax.left.token);
+        
+        if (this.currScope.getVariable(syntax.left) === false) {
+            ErrorObj.ReportUndefinedVariable(syntax.left.token);
+            return left;
+        }
+
+        const right: Expression = this.bind(syntax.right).expression;
 
         return new InitializationExpression(left, right);
     }

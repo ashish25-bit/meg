@@ -158,6 +158,18 @@ export class Lexer {
         if (kind === TokenKind.BooleanFalseToken)
           return new SyntaxToken(str, kind, false);
 
+        if (kind === TokenKind.StringToken)
+          return new SyntaxToken(str, kind, null);
+          
+        if (kind === TokenKind.IntegerToken)
+          return new SyntaxToken(str, kind, null);
+          
+        if (kind === TokenKind.BooleanToken)
+          return new SyntaxToken(str, kind, null);
+
+        if (kind === TokenKind.RealToken)
+          return new SyntaxToken(str, kind, null);
+
         return new SyntaxToken(str, kind, null);
 
     }
