@@ -51,7 +51,7 @@ export class Evaluate {
 
       case NodeKind.VariableExpression:
         let data: number | boolean = this.currUnit.scope.getVariable(exp, true);
-        if (!data) {
+        if (data === undefined || data === false) {
             ErrorObj.ReportUndefinedVariable(exp.token);
             this.error_status = true;
             return -1;
