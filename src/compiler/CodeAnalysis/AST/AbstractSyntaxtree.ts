@@ -190,7 +190,19 @@ export class Binder {
 
             case TokenKind.EqualityOperator:
                 return BinaryOperatorKind.EqualsOperator;
-            
+
+            case TokenKind.LessThanOperator:
+                return BinaryOperatorKind.LessThan;
+
+            case TokenKind.LessThanOrEqualOperator:
+                return BinaryOperatorKind.LessThanEquals;
+
+            case TokenKind.GreaterThanOperator:
+                return BinaryOperatorKind.GreaterThan;
+
+            case TokenKind.GreaterThanOrEqualOperator:
+                return BinaryOperatorKind.GreaterThanEquals;
+
             case TokenKind.NotEqualOperator:
                 return BinaryOperatorKind.NotEquals;
 

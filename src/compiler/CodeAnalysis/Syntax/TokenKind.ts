@@ -17,6 +17,10 @@ export enum TokenKind {
   BinaryOrOperator,
   EqualityOperator,
   NotEqualOperator,
+  LessThanOrEqualOperator,
+  LessThanOperator,
+  GreaterThanOrEqualOperator,
+  GreaterThanOperator,
   AssignmentOperatorToken,
 
   NumberToken,

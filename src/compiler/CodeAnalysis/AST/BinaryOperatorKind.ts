@@ -8,5 +8,9 @@ export enum BinaryOperatorKind {
     EqualsOperator,
     NotEquals,
     Modulus,
-    Assignment
+    Assignment,
+    LessThan,
+    LessThanEquals,
+    GreaterThan,
+    GreaterThanEquals
 }

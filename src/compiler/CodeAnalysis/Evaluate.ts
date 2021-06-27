@@ -125,6 +125,22 @@ export class Evaluate {
       case BinaryOperatorKind.EqualsOperator:
         if (left === right) return 1;
         return 0;
+
+      case BinaryOperatorKind.LessThan:
+        if (left < right) return 1;
+        return 0;
+
+      case BinaryOperatorKind.LessThanEquals:
+        if (left <= right) return 1;
+        return 0;
+
+      case BinaryOperatorKind.GreaterThan:
+        if (left > right) return 1;
+        return 0;
+
+      case BinaryOperatorKind.GreaterThanEquals:
+        if (left >= right) return 1;
+        return 0;
       
       case BinaryOperatorKind.NotEquals:
         if (left !== right) return 1;

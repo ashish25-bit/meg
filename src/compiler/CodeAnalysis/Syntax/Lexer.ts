@@ -109,6 +109,24 @@ export class Lexer {
         this.position--;
         return new SyntaxToken('!', TokenKind.UnaryNotOperator, null);
 
+      // less than and less than or equals to
+      case '<':
+        this.next();
+        if (this.getChar() === '=')
+          return new SyntaxToken('<=', TokenKind.LessThanOrEqualOperator, null);
+
+        this.position--;
+        return new SyntaxToken('<', TokenKind.LessThanOperator, null);
+
+      // less than and less than or equals to
+      case '>':
+        this.next();
+        if (this.getChar() === '=')
+          return new SyntaxToken('>=', TokenKind.GreaterThanOrEqualOperator, null);
+
+        this.position--;
+        return new SyntaxToken('>', TokenKind.GreaterThanOperator, null);
+
       case '%':
         return new SyntaxToken('%', TokenKind.ModulusToken, null);
 

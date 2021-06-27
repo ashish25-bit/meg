@@ -30,6 +30,10 @@ export function binaryOperatorPrecedence(kind: TokenKind): number {
         
         case TokenKind.EqualityOperator:
         case TokenKind.NotEqualOperator:
+        case TokenKind.LessThanOperator:
+        case TokenKind.LessThanOrEqualOperator:
+        case TokenKind.GreaterThanOperator:
+        case TokenKind.GreaterThanOrEqualOperator:
             return MAX - 4;
 
         case TokenKind.BinaryAndOperator:
