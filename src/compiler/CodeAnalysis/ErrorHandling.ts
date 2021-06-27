@@ -1,67 +1,53 @@
 import { TokenKind } from "./Syntax/TokenKind";
 
 class Errors {
-  private static _errors: Array<string>;
-
-  constructor() {
-      Errors._errors = [];
-  }
-
-  public initialize(): void {
-    Errors._errors = [];
-  }
-  
-  get errors() {
-    return Errors._errors;
-  }
-
-  ReportBadCharacter(character: string) {
+  ReportBadCharacter(character: string): string {
     const msg = `Bad character input '${character}'`;
-    Errors._errors.push(msg);
+    return msg;
   }
 
-  ReportWorngTokenKind(actual: TokenKind, expected: TokenKind) {
+  ReportWorngTokenKind(actual: TokenKind, expected: TokenKind): string {
     const msg = `Unexpected token ${TokenKind[actual]}, expected ${TokenKind[expected]}`;
-    Errors._errors.push(msg);
+    return msg;
   }
 
-  ReportUnknownKind(kind: TokenKind) {
+  ReportUnknownKind(kind: TokenKind): string {
     const msg = `Unexpected syntax kind: '${TokenKind[kind]}'`;
-    Errors._errors.push(msg);
+    return msg;
   }
 
-  ReportUnknownUnaryOperator(kind: TokenKind) {
+  ReportUnknownUnaryOperator(kind: TokenKind): string {
     const msg = `Unknown unary token kind '${kind}'`;
-    Errors._errors.push(msg);
+    return msg;
   }
 
-  ReportUnkownBinaryOperator(kind: TokenKind) {
+  ReportUnkownBinaryOperator(kind: TokenKind): string {
     const msg = `Unknown unary token kind '${kind}'`;
-    Errors._errors.push(msg);
+    return msg;
   }
 
-  ReportUndefinedVariable(value: string) {
+  ReportUndefinedVariable(value: string): string {
     const msg = `Variable '${value}' is not present in the scope.`;
-    Errors._errors.push(msg);
+    return msg;
   }
 
-  ReportIllegalLeftHandAssignment(value: string | null = null) {
+  ReportIllegalLeftHandAssignment(value: string | null = null): string {
     let msg: string;
     if (value)
       msg = `Cannot Assign to a constant ${value}`;
     else 
       msg = `Cannot Assign to a constant an expression`;
-    Errors._errors.push(msg);
+    return msg;
   }
 
-  ReportVariableAlreadyDeclared(name: any) {
+  ReportVariableAlreadyDeclared(name: any): string {
     const msg = `Variable ${name} already declared in the scope.`;
-    Errors._errors.push(msg);
+    return msg;
   }
 
-  BehavoiurNotDefinedYet() {
+  BehavoiurNotDefinedYet(): string {
     const msg = `Error not defined yet.`;
-    Errors._errors.push(msg);    
+    return msg;
   }
 }
 

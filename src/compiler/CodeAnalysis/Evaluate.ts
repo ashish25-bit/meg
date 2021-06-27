@@ -52,9 +52,7 @@ export class Evaluate {
       case NodeKind.VariableExpression:
         let data: number | boolean = this.currUnit.scope.getVariable(exp, true);
         if (data === undefined || data === false) {
-            ErrorObj.ReportUndefinedVariable(exp.token);
-            this.error_status = true;
-            return -1;
+            throw new Error(ErrorObj.ReportUndefinedVariable(exp.token));
         }
         return data;
 
@@ -62,9 +60,7 @@ export class Evaluate {
         let initial_data: number = this.evaluateExpression(exp.right);
         const res = this.currUnit.scope.setVariable(exp.left.token, initial_data);
         if (!res) {
-            ErrorObj.ReportUndefinedVariable(exp.token);
-            this.error_status = true;
-            return -1;
+            throw new Error(ErrorObj.ReportUndefinedVariable(exp.token));
         }
         return initial_data;
 

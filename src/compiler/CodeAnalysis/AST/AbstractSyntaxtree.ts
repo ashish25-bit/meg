@@ -72,20 +72,16 @@ export class Binder {
                 return this.getUnit(initialExp);
 
             default:
-                ErrorObj.ReportUnknownKind(syntax.kind);
-                throw new Error(`Unexpected syntax kind: '${TokenKind[syntax.kind]}'`);
+                throw new Error(ErrorObj.ReportUnknownKind(syntax.kind));
         }
     }
 
     bindVariableExpression(syntax: ExpressionSyntax): Expression {
-        // if (this.currScope.getVariable(syntax) === false)
-        //     this.currScope.Declare(syntax);
-        // return new VariableExpression(syntax.token);
 
         // check whether the variable is present in the current scope or in the parent scope
         // value can be undefined also
         if (this.currScope.getVariable(syntax) === false) {
-            ErrorObj.ReportUndefinedVariable(syntax.token);
+            throw new Error(ErrorObj.ReportUndefinedVariable(syntax.token));
         }
         return new VariableExpression(syntax.token);
     }
@@ -115,8 +111,7 @@ export class Binder {
         const variable = new VariableExpression(name);
 
         if (!this.currScope.Declare(syntax.identifier)) {
-            ErrorObj.ReportVariableAlreadyDeclared(name);
-            return variable;
+            throw new Error(ErrorObj.ReportVariableAlreadyDeclared(name));
         }
         
         const initializingValue: Expression = this.bind(syntax.initializingValue).expression;
@@ -128,8 +123,7 @@ export class Binder {
         const left: Expression = new VariableExpression(syntax.left.token);
         
         if (this.currScope.getVariable(syntax.left) === false) {
-            ErrorObj.ReportUndefinedVariable(syntax.left.token);
-            return left;
+            throw new Error(ErrorObj.ReportUndefinedVariable(syntax.left.token));
         }
 
         const right: Expression = this.bind(syntax.right).expression;
@@ -168,8 +162,7 @@ export class Binder {
                 return UnaryOperatorKind.Not;
 
             default:
-                ErrorObj.ReportUnknownUnaryOperator(kind);
-                throw new Error(`Unexpected unary token kind '${TokenKind[kind]}'`);
+                throw new Error(ErrorObj.ReportUnknownUnaryOperator(kind));
         }
     } 
 
@@ -208,8 +201,8 @@ export class Binder {
                 return BinaryOperatorKind.Assignment;
 
             default:
-                ErrorObj.ReportUnkownBinaryOperator(kind);
-                throw new Error(`Unexpected binary token kind '${TokenKind[kind]}'`);
+                
+                throw new Error(ErrorObj.ReportUnkownBinaryOperator(kind));
         }
     }
 

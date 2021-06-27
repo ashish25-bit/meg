@@ -61,13 +61,8 @@ export class Parser {
     this.setTokens();
     let statements:Array<ExpressionSyntax> = [];
 
-    if (ErrorObj.errors.length !== 0)
-      return statements;
-
     while (this.position < this.tokens.length && this.getCurrent().kind !== TokenKind.EndOfFileToken) {
       const expression = this.parseExpression();
-      if (ErrorObj.errors.length)
-        return statements;
       statements.push(expression)
     }
 
@@ -128,8 +123,7 @@ export class Parser {
     let pos2 = this.lookAhead(1);
 
     if (pos1 && pos1.kind === TokenKind.AssignmentOperatorToken) {
-      ErrorObj.ReportIllegalLeftHandAssignment();
-      return new SyntaxToken(this.nextToken().token, TokenKind.BadToken, null);
+      throw new Error(ErrorObj.ReportIllegalLeftHandAssignment());
     }
 
     if (
@@ -137,8 +131,7 @@ export class Parser {
       pos1.kind === TokenKind.NumberToken &&
       pos2.kind === TokenKind.AssignmentOperatorToken
     ) {
-        ErrorObj.ReportIllegalLeftHandAssignment(pos1.token);
-        return new SyntaxToken(this.nextToken().token, TokenKind.BadToken, null);
+        throw new Error(ErrorObj.ReportIllegalLeftHandAssignment(pos1.token));
     }
 
     while (
@@ -190,16 +183,14 @@ export class Parser {
 
   private matchKind(kind: TokenKind): boolean {
     if (this.position >= this.tokens.length) {
-      ErrorObj.BehavoiurNotDefinedYet();
-      return false;
+      throw new Error(ErrorObj.BehavoiurNotDefinedYet());
     }
 
     if (this.getCurrent().kind === kind)
       return true;
     
     // report error
-    ErrorObj.ReportWorngTokenKind(this.getCurrent().kind, kind);
-    return false;
+    throw new Error(ErrorObj.ReportWorngTokenKind(this.getCurrent().kind, kind));
   }
 
   private parsePrimaryExpression(): ExpressionSyntax {

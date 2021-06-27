@@ -174,7 +174,7 @@ export class Lexer {
 
     }
 
-    ErrorObj.ReportBadCharacter(ch);
-    return new SyntaxToken(ch, TokenKind.BadToken, null);
+    throw new Error(ErrorObj.ReportBadCharacter(ch));
+    // return new SyntaxToken(ch, TokenKind.BadToken, null);
   }
 }
