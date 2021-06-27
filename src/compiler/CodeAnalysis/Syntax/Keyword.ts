@@ -1,20 +1,26 @@
+import { KeywordData } from "../../utils/KeywordData";
 import { TokenKind } from "./TokenKind";
 
-export function getKeywordKind(text: string): TokenKind {
+function getData(kind: TokenKind, value: any): KeywordData {
+    const data: KeywordData = {kind, value}
+    return data;
+}
+
+export function getKeywordKind(text: string): KeywordData {
     switch(text) {
         case "true":
-            return TokenKind.BooleanTrueToken;
+            return getData(TokenKind.BooleanTrueToken, true);
         case "false":
-            return TokenKind.BooleanFalseToken;
+            return getData(TokenKind.BooleanFalseToken, false);
         case "string":
-            return TokenKind.StringToken;
+            return getData(TokenKind.StringToken, null);
         case "int":
-            return TokenKind.IntegerToken;
+            return getData(TokenKind.IntegerToken, null);
         case "real":
-            return TokenKind.RealToken;
+            return getData(TokenKind.RealToken, null);
         case "bool":
-            return TokenKind.BooleanToken;
+            return getData(TokenKind.BooleanToken, null);
         default:
-            return TokenKind.IdentifierToken;
+            return getData(TokenKind.IdentifierToken, null);
     }
 }

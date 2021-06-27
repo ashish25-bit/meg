@@ -2,6 +2,7 @@ import { getKeywordKind } from './Keyword';
 import { SyntaxToken } from './SyntaxToken';
 import { TokenKind } from './TokenKind';
 import { ErrorObj } from '../ErrorHandling';
+import { KeywordData } from '../../utils/KeywordData';
 
 export class Lexer {
   private expression: string;
@@ -168,27 +169,28 @@ export class Lexer {
         if (this.getChar() !== '\0' && this.getChar() !== ' ' && this.getChar() !== '\t')
           this.position--;
 
-        const kind: TokenKind = getKeywordKind(str);
+        const {kind, value}: KeywordData = getKeywordKind(str);
         
-        if (kind === TokenKind.BooleanTrueToken)
-          return new SyntaxToken(str, kind, true);
+        // if (kind === TokenKind.BooleanTrueToken)
+        //   return new SyntaxToken(str, kind, true);
 
-        if (kind === TokenKind.BooleanFalseToken)
-          return new SyntaxToken(str, kind, false);
+        // if (kind === TokenKind.BooleanFalseToken)
+        //   return new SyntaxToken(str, kind, false);
 
-        if (kind === TokenKind.StringToken)
-          return new SyntaxToken(str, kind, null);
+        // if (kind === TokenKind.StringToken)
+        //   return new SyntaxToken(str, kind, null);
           
-        if (kind === TokenKind.IntegerToken)
-          return new SyntaxToken(str, kind, null);
+        // if (kind === TokenKind.IntegerToken)
+        //   return new SyntaxToken(str, kind, null);
           
-        if (kind === TokenKind.BooleanToken)
-          return new SyntaxToken(str, kind, null);
+        // if (kind === TokenKind.BooleanToken)
+        //   return new SyntaxToken(str, kind, null);
 
-        if (kind === TokenKind.RealToken)
-          return new SyntaxToken(str, kind, null);
+        // if (kind === TokenKind.RealToken)
+        //   return new SyntaxToken(str, kind, null);
 
-        return new SyntaxToken(str, kind, null);
+        // return new SyntaxToken(str, kind, null);
+        return new SyntaxToken(str, kind, value);
 
     }
 
