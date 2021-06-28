@@ -196,25 +196,28 @@ export class Parser {
   private parsePrimaryExpression(): ExpressionSyntax {
 
     switch (this.getCurrent().kind) {
-      case TokenKind.OpenBracketToken:
+      case TokenKind.OpenBracketToken: {
         let left = this.nextToken();
         let expression = this.parseExpression();
         if (this.matchKind(TokenKind.CloseBracketToken))
           return new ParenthesizeExpressionSyntax(left, expression, this.nextToken());
         break;
-
+      }
       case TokenKind.BooleanFalseToken:
-      case TokenKind.BooleanTrueToken:
+      case TokenKind.BooleanTrueToken: {
         const kind = this.getCurrent().value === true ? TokenKind.BooleanTrueToken : TokenKind.BooleanFalseToken;
         return new LiteralExpressionSyntax(this.nextToken().value, kind);
+      }
 
-      case TokenKind.IdentifierToken:
+      case TokenKind.IdentifierToken: {
         return new VariableExpressionSyntax(this.nextToken().token);
+      }
 
-      default:
+      default: {
         if (this.matchKind(TokenKind.NumberToken))
           return new LiteralExpressionSyntax(this.nextToken().value, TokenKind.NumberToken);
         break;
+      }
     }
 
     return new SyntaxToken(this.getCurrent().token, TokenKind.BadToken, null);

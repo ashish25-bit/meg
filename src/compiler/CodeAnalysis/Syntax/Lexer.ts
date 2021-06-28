@@ -170,31 +170,10 @@ export class Lexer {
           this.position--;
 
         const {kind, value}: KeywordData = getKeywordKind(str);
-        
-        // if (kind === TokenKind.BooleanTrueToken)
-        //   return new SyntaxToken(str, kind, true);
-
-        // if (kind === TokenKind.BooleanFalseToken)
-        //   return new SyntaxToken(str, kind, false);
-
-        // if (kind === TokenKind.StringToken)
-        //   return new SyntaxToken(str, kind, null);
-          
-        // if (kind === TokenKind.IntegerToken)
-        //   return new SyntaxToken(str, kind, null);
-          
-        // if (kind === TokenKind.BooleanToken)
-        //   return new SyntaxToken(str, kind, null);
-
-        // if (kind === TokenKind.RealToken)
-        //   return new SyntaxToken(str, kind, null);
-
-        // return new SyntaxToken(str, kind, null);
         return new SyntaxToken(str, kind, value);
 
     }
 
     throw new Error(ErrorObj.ReportBadCharacter(ch));
-    // return new SyntaxToken(ch, TokenKind.BadToken, null);
   }
 }

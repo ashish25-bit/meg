@@ -31,38 +31,42 @@ export class Evaluate {
 
     switch (exp.kind) {
 
-      case NodeKind.VariableDeclarationExpression: 
-        let declartion_data = this.evaluateExpression(exp.initializer);
-        this.currUnit.scope.setVariable(exp.variable.token, declartion_data);
-        return declartion_data;
+      case NodeKind.VariableDeclarationExpression: {
+        let data = this.evaluateExpression(exp.initializer);
+        this.currUnit.scope.setVariable(exp.variable.token, data);
+        return data;
+      }
 
-      case NodeKind.BlockExpression:
-        let b_data: Array<number> = [];
+      case NodeKind.BlockExpression: {
+        let data: Array<number> = [];
         const parent: Unit = this.currUnit;
-
+  
         for (const statement of exp.statements) {
           if (statement.expression !== undefined)
             this.currUnit = statement;
-          b_data.push(this.evaluateExpression(statement));
+          data.push(this.evaluateExpression(statement));
         }
-
+  
         this.currUnit = parent;
-        return b_data[b_data.length - 1];
+        return data[data.length - 1];
+      }
 
-      case NodeKind.VariableExpression:
+      case NodeKind.VariableExpression: {
         let data: number | boolean = this.currUnit.scope.getVariable(exp, true);
         if (data === undefined || data === false) {
             throw new Error(ErrorObj.ReportUndefinedVariable(exp.token));
         }
         return data;
+      }
 
-      case NodeKind.InitializationExpression:
-        let initial_data: number = this.evaluateExpression(exp.right);
-        const res = this.currUnit.scope.setVariable(exp.left.token, initial_data);
+      case NodeKind.InitializationExpression: {
+        let data: number = this.evaluateExpression(exp.right);
+        const res = this.currUnit.scope.setVariable(exp.left.token, data);
         if (!res) {
             throw new Error(ErrorObj.ReportUndefinedVariable(exp.token));
         }
-        return initial_data;
+        return data;
+      }
 
       // numbers and boolean
       case NodeKind.LiteralExpression:
