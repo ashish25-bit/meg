@@ -70,9 +70,15 @@ export class Parser {
     return statements;
   }
 
-  private parseExpression(): ExpressionSyntax {
+  private parseExpression(paranthesized: boolean = false): ExpressionSyntax {
+    const kind = this.getCurrent().kind;
+
+    if (paranthesized) {
+      return this.parseAssignmentExpression(paranthesized);
+  }
+
     // checking for opening curly brace
-    if (this.getCurrent().kind === TokenKind.OpenCurlyBraceToken) {
+    if (kind === TokenKind.OpenCurlyBraceToken) {
       let openBrace = this.nextToken();
       let statements: Array<ExpressionSyntax> = this.parseStatments();
       if (this.matchKind(TokenKind.CloseCurlyBraceToken))
@@ -80,10 +86,10 @@ export class Parser {
     }
 
     else if (
-      this.getCurrent().kind === TokenKind.StringToken ||
-      this.getCurrent().kind === TokenKind.IntegerToken ||
-      this.getCurrent().kind === TokenKind.RealToken ||
-      this.getCurrent().kind === TokenKind.BooleanToken
+      kind === TokenKind.StringToken ||
+      kind === TokenKind.IntegerToken ||
+      kind === TokenKind.RealToken ||
+      kind === TokenKind.BooleanToken
     )
       return this.parseDeclarationStatement();
 
@@ -118,7 +124,7 @@ export class Parser {
     return statements;
 }
 
-  private parseAssignmentExpression(): ExpressionSyntax {
+  private parseAssignmentExpression(paranthesized: boolean = false): ExpressionSyntax {
     let pos1 = this.lookAhead(0);
     let pos2 = this.lookAhead(1);
 
@@ -141,7 +147,7 @@ export class Parser {
     ) {
       let left = this.parsePrimaryExpression();
       let operator = this.nextToken();
-      let right = this.parseAssignmentExpression();
+      let right = this.parseAssignmentExpression(paranthesized);
 
       return new InitializationExpressionSyntax(left, operator, right);
     }
@@ -198,7 +204,7 @@ export class Parser {
     switch (this.getCurrent().kind) {
       case TokenKind.OpenBracketToken: {
         let left = this.nextToken();
-        let expression = this.parseExpression();
+        let expression = this.parseExpression(true);
         if (this.matchKind(TokenKind.CloseBracketToken))
           return new ParenthesizeExpressionSyntax(left, expression, this.nextToken());
         break;
