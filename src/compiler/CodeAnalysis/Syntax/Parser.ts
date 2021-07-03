@@ -15,6 +15,7 @@ import { VariableExpressionSyntax } from './VariableExpressionSyntax';
 import { BlockExpressionSyntax } from './BlockExpressionSyntax';
 import { ErrorObj } from '../ErrorHandling';
 import { VariableDeclarationSyntax } from './VariableDeclarationSyntax';
+import { PrintStatement } from './PrintStatement';
 
 export class Parser {
   private expression: string;
@@ -75,7 +76,7 @@ export class Parser {
 
     if (paranthesized) {
       return this.parseAssignmentExpression(paranthesized);
-  }
+    }
 
     // checking for opening curly brace
     if (kind === TokenKind.OpenCurlyBraceToken) {
@@ -83,6 +84,10 @@ export class Parser {
       let statements: Array<ExpressionSyntax> = this.parseStatments();
       if (this.matchKind(TokenKind.CloseCurlyBraceToken))
         return new BlockExpressionSyntax(openBrace, statements, this.nextToken());
+    }
+
+    else if (kind === TokenKind.PrintKeyword) {
+      return this.parsePrintStatement();
     }
 
     else if (
@@ -111,6 +116,24 @@ export class Parser {
     return new VariableDeclarationSyntax(keyword, identifier ,initializingValue);
   }
 
+  private parsePrintStatement(): ExpressionSyntax {
+    const printToken: SyntaxToken = this.nextToken();
+
+    if (this.matchKind(TokenKind.OpenBracketToken)) {
+      this.nextToken();
+
+      if (this.matchKind(TokenKind.IdentifierToken)) {
+        const variable: ExpressionSyntax = this.parsePrimaryExpression();
+        if (this.matchKind(TokenKind.CloseBracketToken)) {
+          this.nextToken();
+
+          return new PrintStatement(printToken, variable);
+        }
+      }
+    }
+    return new SyntaxToken("", TokenKind.BadToken, null);
+  }
+
   private parseStatments(): Array<ExpressionSyntax> {
     let statements: Array<ExpressionSyntax> = [];
 
@@ -122,7 +145,7 @@ export class Parser {
       statements.push(statement);
     }
     return statements;
-}
+  }
 
   private parseAssignmentExpression(paranthesized: boolean = false): ExpressionSyntax {
     let pos1 = this.lookAhead(0);

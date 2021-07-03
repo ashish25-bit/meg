@@ -8,7 +8,7 @@ const MainContainer: React.FC = () =>  {
   return (
     <EditorProvider>
       <div className="mainContainer">
-        <ButtonContainer />       
+        <ButtonContainer />
         <div className="wrapperContainer">
           <Editor />
           <Output />

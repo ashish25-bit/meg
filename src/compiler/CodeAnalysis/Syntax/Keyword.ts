@@ -20,6 +20,8 @@ export function getKeywordKind(text: string): KeywordData {
             return getData(TokenKind.RealToken, null);
         case "bool":
             return getData(TokenKind.BooleanToken, null);
+        case "print":
+            return getData(TokenKind.PrintKeyword, null);
         default:
             return getData(TokenKind.IdentifierToken, null);
     }

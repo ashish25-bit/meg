@@ -31,6 +31,11 @@ export class Evaluate {
 
     switch (exp.kind) {
 
+      case NodeKind.PrintStatement: {
+        let data: number = this.evaluateExpression(exp.variable);
+        return data;
+      }
+
       case NodeKind.VariableDeclarationExpression: {
         let data = this.evaluateExpression(exp.initializer);
         this.currUnit.scope.setVariable(exp.variable.token, data);

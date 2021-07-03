@@ -32,11 +32,14 @@ export enum TokenKind {
   RealToken,
   BooleanToken,
 
+  PrintKeyword,
+  PrintStatement,
+
   BlockExpression,
   UnaryExpressionToken,
   BinaryExpressionToken,
   ParenthesizedExpression,
   VariableExpression,
   InitializationExpression,
-  VariableDeclaration
+  VariableDeclaration,
 };

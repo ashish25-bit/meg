@@ -5,5 +5,6 @@ export enum NodeKind {
   VariableExpression,
   InitializationExpression,
   BlockExpression,
-  VariableDeclarationExpression
+  VariableDeclarationExpression,
+  PrintStatement
 }

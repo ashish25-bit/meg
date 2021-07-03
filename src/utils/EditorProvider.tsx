@@ -9,21 +9,18 @@ interface Prop {
 
 const EditorProvider = (props: Prop) => {
 
-  const [lines, setLines] = useState(13);
-  const [currentLine, setCurrentLine] = useState(13);
+  const [lines, setLines] = useState(10);
+  const [currentLine, setCurrentLine] = useState(10);
   const [lineData, setLineData] = useState<Array<string>>([
     "int a = 10",
-    "{",
-    "   int b = a * 10",
-    "   {",
-    "       int c = a + b",
-    "       b = c - a",
-    "   }",
-    "   {",
-    "       int d = b - a",
-    "       a = d - b",
-    "   }",
-    "}"
+    "int b = 20",
+    "",
+    "int temp = a",
+    "a = b",
+    "b = temp",
+    "",
+    "print(a)",
+    "print(b)"
   ]);
   const [outputData, setOutputData] = useState(null);
 

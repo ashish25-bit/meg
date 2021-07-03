@@ -5,7 +5,7 @@ import { Evaluate } from './CodeAnalysis/Evaluate';
 import { ReturnData } from '../utils/ReturnData';
 import { Unit } from './CodeAnalysis/AST/Unit';
 import { NodeKind } from './CodeAnalysis/AST/NodeKind';
-import { Scope } from './CodeAnalysis/AST/Scope';
+// import { Scope } from './CodeAnalysis/AST/Scope';
 
 function getReturnData(error: boolean, data: any, lineNumber: number = -1): ReturnData {
   const log: ReturnData = {
@@ -31,27 +31,31 @@ export const expressionAnalyzer = (expression: string,  variables: Map<string, n
       const evaluate = new Evaluate(unit);
       evaluate.evaluate(unit);
       
-      addToMap(variables, unit.scope);
-      if (unit.expression.kind === NodeKind.BlockExpression) {
-        for (const statement of unit.expression.statements) {
-          if (statement.scope !== undefined)
-            addToMap(variables, statement.scope)
-        }
-      }
+      // addToMap(variables, unit.scope);
+      // if (unit.expression.kind === NodeKind.BlockExpression) {
+      //   for (const statement of unit.expression.statements) {
+      //     if (statement.scope !== undefined)
+      //       addToMap(variables, statement.scope)
+      //   }
+      // }
       
-      const res = getReturnData(false, evaluate.result);
-      results.push(res);
+      // const res = getReturnData(false, evaluate.result);
+      // results.push(res);
+
+      if (unit.expression.kind === NodeKind.PrintStatement) {
+        results.push(evaluate.result);
+      }
     }
 
-    return results[results.length - 1];
+    return getReturnData(false, results);
   }
   catch (err) {
     return getReturnData(true, [err.message], lineNumber);
   }  
 }
 
-function addToMap(variables: Map<string, number>, scope: Scope) {
-  scope.variables.forEach((value, key) => {
-    variables.set(`${key}(${scope.scope})`, value);
-  })
-}
+// function addToMap(variables: Map<string, number>, scope: Scope) {
+//   scope.variables.forEach((value, key) => {
+//     variables.set(`${key}(${scope.scope})`, value);
+//   })
+// }

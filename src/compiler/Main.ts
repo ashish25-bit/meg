@@ -22,9 +22,13 @@ export const mainEvaluator = (lineData: Array<string>): ReturnData => {
   if (result.error)
     return result;
 
-  let keyValue = "";
-  variables.forEach((value, key) => keyValue = keyValue + "\n" + key + ": " + value);
-  result.data += keyValue;
+  console.log(variables);
 
+  const ans = result.data.join('\n');
+  // let keyValue = "";
+  // variables.forEach((value, key) => keyValue = keyValue + "\n" + key + ": " + value);
+  // result.data += keyValue;
+
+  result.data = ans;
   return result;
 }

@@ -15,6 +15,7 @@ import { Stack } from '../../utils/Stack';
 import { Scope } from './Scope';
 import { Unit } from './Unit';
 import { VariableDeclarationExpression } from './VariableDeclarationExpression';
+import { PrintStatement } from './PrintStatement';
 
 export class Binder {
     private scopeNum: number;
@@ -31,48 +32,62 @@ export class Binder {
     bind(syntax: ExpressionSyntax): Unit {
 
         switch(syntax.kind) {
-            case TokenKind.ParenthesizedExpression:
+            case TokenKind.ParenthesizedExpression:{
                 return this.bind(syntax.expression)
+            }
 
-            case TokenKind.BlockExpression:
+            case TokenKind.BlockExpression: {
                 this.addNewScope();
-                const blockExp: Expression = this.bindBlockExpression(syntax);
+                const exp: Expression = this.bindBlockExpression(syntax);
 
-                const unit: Unit = this.getUnit(blockExp);
+                const unit: Unit = this.getUnit(exp);
 
                 this.scopeNum--;
                 this.scopeStack.pop();
                 this.currScope = this.scopeStack.top();
                 return unit;
+            }
 
-            case TokenKind.VariableDeclaration:
-            const declarationExp = this.bindVariableDeclaration(syntax);
-            return this.getUnit(declarationExp);
+            case TokenKind.VariableDeclaration: {
+                const exp = this.bindVariableDeclaration(syntax);
+                return this.getUnit(exp);
+            }
 
             case TokenKind.NumberToken:
             case TokenKind.BooleanFalseToken:
-            case TokenKind.BooleanTrueToken:
-                const literalExp: Expression = this.bindLiteralExpression(syntax);
-                return this.getUnit(literalExp);
+            case TokenKind.BooleanTrueToken: {
+                const exp: Expression = this.bindLiteralExpression(syntax);
+                return this.getUnit(exp);
+            }
 
-            case TokenKind.UnaryExpressionToken:
-                const unaryExp = this.bindUnaryExpression(syntax);
-                return this.getUnit(unaryExp);
+            case TokenKind.UnaryExpressionToken: {
+                const exp = this.bindUnaryExpression(syntax);
+                return this.getUnit(exp);
+            }
                 
-            case TokenKind.BinaryExpressionToken:
-                const binaryExp = this.bindBinaryExpression(syntax);
-                return this.getUnit(binaryExp);
+            case TokenKind.BinaryExpressionToken: {
+                const exp = this.bindBinaryExpression(syntax);
+                return this.getUnit(exp);
+            }
 
-            case TokenKind.VariableExpression:
-                const varExp = this.bindVariableExpression(syntax);
-                return this.getUnit(varExp);
+            case TokenKind.VariableExpression: {
+                const exp = this.bindVariableExpression(syntax);
+                return this.getUnit(exp);
+            }
 
-            case TokenKind.InitializationExpression:
-                const initialExp = this.bindInitializationExpression(syntax);
-                return this.getUnit(initialExp);
+            case TokenKind.InitializationExpression: {
+                const exp = this.bindInitializationExpression(syntax);
+                return this.getUnit(exp);
+            }
 
-            default:
+            case TokenKind.PrintStatement: {
+                const exp = this.bindPrintStatement(syntax);
+                return this.getUnit(exp);
+            }
+
+            default: {
                 throw new Error(ErrorObj.ReportUnknownKind(syntax.kind));
+            }
         }
     }
 
@@ -146,6 +161,11 @@ export class Binder {
         }
 
         return new BlockExpression(openBrace, statements, closeBrace);
+    }
+
+    private bindPrintStatement(syntax: ExpressionSyntax): Expression {
+        const variable = this.bindVariableExpression(syntax.variable);
+        return new PrintStatement(variable);
     }
 
     bindUnaryOperatorKind(kind: TokenKind, operand: Expression): UnaryOperatorKind | null {
